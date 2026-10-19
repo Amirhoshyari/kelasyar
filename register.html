@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ثبت‌نام معلم | کلاس‌یار</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            background: #f8f7ff;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            padding: 35px;
+            border-radius: 22px;
+            box-shadow: 0 15px 50px rgba(82, 55, 164, 0.10);
+        }
+
+        .auth-logo {
+            text-align: center;
+            color: #6c4ce3;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 22px;
+        }
+
+        .auth-card h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .auth-description {
+            text-align: center;
+            color: #77738d;
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .auth-form label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 14px 0 6px;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e0f3;
+            border-radius: 10px;
+            outline: none;
+            font-family: inherit;
+            font-size: 14px;
+            background: white;
+        }
+
+        .auth-form input:focus {
+            border-color: #6c4ce3;
+            box-shadow: 0 0 0 3px rgba(108, 76, 227, 0.10);
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 13px;
+            margin-top: 24px;
+            border: none;
+            border-radius: 10px;
+            background: #6c4ce3;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .auth-submit:hover {
+            background: #5133c4;
+        }
+
+        .auth-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 22px;
+            color: #77738d;
+        }
+
+        .auth-footer a {
+            color: #6c4ce3;
+            font-weight: 700;
+        }
+
+        .auth-message {
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <div class="auth-logo">🎓 کلاس‌یار</div>
+
+            <h1>ساخت حساب معلم</h1>
+
+            <p class="auth-description">
+                به کلاس‌یار خوش آمدی! حساب خودت را بساز.
+            </p>
+
+            <form class="auth-form" id="registerForm">
+
+                <label for="fullName">
+                    نام و نام خانوادگی
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="مثلاً علی رضایی"
+                    autocomplete="name"
+                    required
+                >
+
+                <label for="email">
+                    ایمیل
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="example@email.com"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="password">
+                    رمز عبور
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="حداقل ۸ کاراکتر"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <label for="confirmPassword">
+                    تکرار رمز عبور
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="رمز عبور را دوباره وارد کن"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button
+                    class="auth-submit"
+                    id="registerButton"
+                    type="submit"
+                >
+                    ایجاد حساب کاربری
+                </button>
+
+                <p
+                    class="auth-message"
+                    id="registerMessage"
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+            <div class="auth-footer">
+                قبلاً حساب ساخته‌ای؟
+                <a href="login.html">وارد شو</a>
+            </div>
+
+            <div class="auth-footer">
+                <a href="index.html">بازگشت به صفحه اصلی</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        const registerForm = document.getElementById("registerForm");
+        const registerMessage = document.getElementById("registerMessage");
+        const registerButton = document.getElementById("registerButton");
+
+        registerForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const fullName =
+                document.getElementById("fullName").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+
+            // بررسی خالی نبودن فیلدها
+            if (!fullName || !email || !password || !confirmPassword) {
+
+                registerMessage.style.color = "#dc2626";
+
+                registerMessage.textContent =
+                    "لطفاً تمام فیلدها را پر کن.";
+
+                return;
+            }
+
+
+            // بررسی رمز
+            if (password.length < 8) {
+
+                registerMessage.style.color = "#dc2626";
+
+                registerMessage.textContent =
+                    "رمز عبور باید حداقل ۸ کاراکتر باشد.";
+
+                return;
+            }
+
+
+            // بررسی یکسان بودن رمزها
+            if (password !== confirmPassword) {
+
+                registerMessage.style.color = "#dc2626";
+
+                registerMessage.textContent =
+                    "رمز عبور و تکرار آن یکسان نیستند.";
+
+                return;
+            }
+
+
+            // حالت در حال ارسال
+            registerButton.disabled = true;
+
+            registerButton.textContent =
+                "در حال ساخت حساب...";
+
+            registerMessage.style.color = "#6c4ce3";
+
+            registerMessage.textContent =
+                "در حال ارتباط با سرور...";
+
+
+            try {
+
+                const response = await fetch(
+                    "http://localhost:3000/api/register",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            fullName,
+                            email,
+                            password
+                        })
+                    }
+                );
+
+
+                const data = await response.json();
+
+
+                // اگر ثبت‌نام موفق بود
+                if (data.success) {
+
+                    registerMessage.style.color = "#16a36a";
+
+                    registerMessage.textContent =
+                        "حساب کاربری با موفقیت ساخته شد!";
+
+
+                    registerButton.textContent =
+                        "حساب ساخته شد ✓";
+
+
+                    // انتقال به صفحه ورود
+                    setTimeout(function () {
+
+                        window.location.href = "login.html";
+
+                    }, 1500);
+
+                    return;
+                }
+
+
+                // نمایش خطای سرور
+                registerMessage.style.color = "#dc2626";
+
+                registerMessage.textContent =
+                    data.message || "ثبت‌نام انجام نشد.";
+
+                registerButton.disabled = false;
+
+                registerButton.textContent =
+                    "ایجاد حساب کاربری";
+
+
+            } catch (error) {
+
+                console.error("Register Error:", error);
+
+                registerMessage.style.color = "#dc2626";
+
+                registerMessage.textContent =
+                    "ارتباط با سرور برقرار نشد. مطمئن شو Backend اجراست.";
+
+                registerButton.disabled = false;
+
+                registerButton.textContent =
+                    "ایجاد حساب کاربری";
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

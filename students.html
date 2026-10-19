@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>دانش‌آموزان | کلاس‌یار</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .page {
+            width: min(1100px, 94%);
+            margin: 0 auto;
+            padding: 30px 0 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .class-info {
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .back-btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 18px;
+            background: #1e293b;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #334155;
+        }
+
+        .add-box {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .add-box h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #38bdf8;
+        }
+
+        .primary-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 0 22px;
+            background: #0ea5e9;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .primary-btn:hover {
+            background: #0284c7;
+        }
+
+        .message {
+            margin-top: 14px;
+            min-height: 20px;
+            font-size: 14px;
+        }
+
+        .students-box {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .students-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 15px;
+        }
+
+        .students-header h2 {
+            margin: 0;
+        }
+
+        .count {
+            background: #0f172a;
+            padding: 8px 13px;
+            border-radius: 10px;
+            color: #cbd5e1;
+        }
+
+        .students-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .student-card {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-main {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .student-name {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .student-code {
+            color: #94a3b8;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 9px 13px;
+            cursor: pointer;
+            color: white;
+            background: #334155;
+        }
+
+        .action-btn:hover {
+            background: #475569;
+        }
+
+        .report-btn {
+            background: #2563eb;
+        }
+
+        .report-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .edit-btn {
+            background: #475569;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 35px 15px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #94a3b8;
+            padding: 35px;
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .primary-btn {
+                padding: 13px;
+            }
+
+            .student-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            .action-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- ========================= -->
+    <!-- سربرگ -->
+    <!-- ========================= -->
+
+    <div class="topbar">
+
+        <div>
+            <h1>👨‍🎓 دانش‌آموزان</h1>
+
+            <div
+                id="classInfo"
+                class="class-info"
+            >
+                در حال دریافت اطلاعات کلاس...
+            </div>
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goClasses()"
+        >
+            ← بازگشت به کلاس‌ها
+        </button>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- افزودن دانش‌آموز -->
+    <!-- ========================= -->
+
+    <div class="add-box">
+
+        <h2>➕ افزودن دانش‌آموز</h2>
+
+        <div class="form-grid">
+
+            <input
+                type="text"
+                id="studentName"
+                placeholder="نام و نام خانوادگی دانش‌آموز"
+            >
+
+            <input
+                type="text"
+                id="studentCode"
+                placeholder="کد دانش‌آموزی"
+            >
+
+            <button
+                class="primary-btn"
+                onclick="addStudent()"
+            >
+                افزودن
+            </button>
+
+        </div>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- لیست دانش‌آموزان -->
+    <!-- ========================= -->
+
+    <div class="students-box">
+
+        <div class="students-header">
+
+            <h2>📋 لیست دانش‌آموزان</h2>
+
+            <div
+                id="studentCount"
+                class="count"
+            >
+                ۰ دانش‌آموز
+            </div>
+
+        </div>
+
+        <div id="studentsContainer">
+
+            <div class="loading">
+                در حال دریافت دانش‌آموزان...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const API_URL = "http://localhost:3000";
+
+const token =
+    localStorage.getItem("kelasyarToken");
+
+const selectedClassId =
+    localStorage.getItem("selectedClassId");
+
+
+// ======================================================
+// بررسی ورود
+// ======================================================
+
+if (!token) {
+
+    window.location.href = "login.html";
+
+}
+
+
+// ======================================================
+// بررسی انتخاب کلاس
+// ======================================================
+
+if (!selectedClassId) {
+
+    alert("ابتدا یک کلاس را انتخاب کنید.");
+
+    window.location.href =
+        "classes.html";
+
+}
+
+
+// ======================================================
+// عناصر صفحه
+// ======================================================
+
+const classInfo =
+    document.getElementById("classInfo");
+
+const studentsContainer =
+    document.getElementById("studentsContainer");
+
+const studentCount =
+    document.getElementById("studentCount");
+
+const message =
+    document.getElementById("message");
+
+
+// ======================================================
+// بازگشت به کلاس‌ها
+// ======================================================
+
+function goClasses() {
+
+    window.location.href =
+        "classes.html";
+
+}
+
+
+// ======================================================
+// نمایش پیام
+// ======================================================
+
+function showMessage(text, success = false) {
+
+    message.textContent = text;
+
+    message.style.color =
+        success
+            ? "#22c55e"
+            : "#f87171";
+
+}
+
+
+// ======================================================
+// مدیریت خطای احراز هویت
+// ======================================================
+
+function handleUnauthorized() {
+
+    localStorage.removeItem(
+        "kelasyarToken"
+    );
+
+    localStorage.removeItem(
+        "kelasyarUser"
+    );
+
+    window.location.href =
+        "login.html";
+}
+
+
+// ======================================================
+// دریافت کلاس
+// ======================================================
+
+async function loadClass() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/classes`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            classInfo.textContent =
+                "خطا در دریافت کلاس";
+
+            return;
+        }
+
+        const currentClass =
+            data.classes.find(
+                item =>
+                    item.id === selectedClassId
+            );
+
+        if (!currentClass) {
+
+            classInfo.textContent =
+                "کلاس پیدا نشد.";
+
+            studentsContainer.innerHTML = `
+                <div class="empty">
+                    ❌ این کلاس وجود ندارد.
+                </div>
+            `;
+
+            return;
+        }
+
+        classInfo.textContent =
+            `${currentClass.name} | پایه: ${currentClass.grade || "مشخص نشده"}`;
+
+    } catch (error) {
+
+        console.error(error);
+
+        classInfo.textContent =
+            "اتصال به سرور برقرار نشد.";
+
+    }
+}
+
+
+// ======================================================
+// دریافت دانش‌آموزان
+// ======================================================
+
+async function loadStudents() {
+
+    studentsContainer.innerHTML = `
+        <div class="loading">
+            در حال دریافت دانش‌آموزان...
+        </div>
+    `;
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/classes/${selectedClassId}/students`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            studentsContainer.innerHTML = `
+                <div class="empty">
+                    ❌ ${escapeHtml(
+                        data.message ||
+                        "خطا در دریافت دانش‌آموزان"
+                    )}
+                </div>
+            `;
+
+            return;
+        }
+
+        renderStudents(data.students);
+
+    } catch (error) {
+
+        console.error(error);
+
+        studentsContainer.innerHTML = `
+            <div class="empty">
+                ❌ اتصال به سرور برقرار نشد.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// نمایش دانش‌آموزان
+// ======================================================
+
+function renderStudents(students) {
+
+    studentCount.textContent =
+        `${students.length} دانش‌آموز`;
+
+    if (!students.length) {
+
+        studentsContainer.innerHTML = `
+            <div class="empty">
+                👨‍🎓 هنوز دانش‌آموزی به این کلاس اضافه نشده است.
+                <br><br>
+                از قسمت بالا اولین دانش‌آموز را اضافه کن.
+            </div>
+        `;
+
+        return;
+    }
+
+    studentsContainer.innerHTML = `
+
+        <div class="students-list">
+
+            ${students.map((student, index) => `
+
+                <div class="student-card">
+
+                    <div class="student-main">
+
+                        <div class="avatar">
+                            ${index + 1}
+                        </div>
+
+                        <div>
+
+                            <div class="student-name">
+                                ${escapeHtml(student.name)}
+                            </div>
+
+                            <div class="student-code">
+                                کد:
+                                ${escapeHtml(
+                                    student.code ||
+                                    "ثبت نشده"
+                                )}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="actions">
+
+                        <button
+                            class="action-btn report-btn"
+                            onclick="openStudentReport('${student.id}')"
+                        >
+                            📊 کارنامه
+                        </button>
+
+                        <button
+                            class="action-btn edit-btn"
+                            onclick="editStudent(
+                                '${student.id}',
+                                '${escapeAttribute(student.name)}',
+                                '${escapeAttribute(student.code || "")}'
+                            )"
+                        >
+                            ✏️ ویرایش
+                        </button>
+
+                        <button
+                            class="action-btn delete-btn"
+                            onclick="deleteStudent('${student.id}')"
+                        >
+                            🗑 حذف
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+    `;
+}
+
+
+// ======================================================
+// افزودن دانش‌آموز
+// ======================================================
+
+async function addStudent() {
+
+    const nameInput =
+        document.getElementById("studentName");
+
+    const codeInput =
+        document.getElementById("studentCode");
+
+    const name =
+        nameInput.value.trim();
+
+    const code =
+        codeInput.value.trim();
+
+    if (!name) {
+
+        showMessage(
+            "لطفاً نام دانش‌آموز را وارد کنید."
+        );
+
+        nameInput.focus();
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/classes/${selectedClassId}/students`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        name,
+                        code
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            showMessage(
+                data.message ||
+                "خطا در افزودن دانش‌آموز."
+            );
+
+            return;
+        }
+
+        nameInput.value = "";
+        codeInput.value = "";
+
+        showMessage(
+            "دانش‌آموز با موفقیت اضافه شد ✅",
+            true
+        );
+
+        loadStudents();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// ویرایش دانش‌آموز
+// ======================================================
+
+async function editStudent(
+    studentId,
+    oldName,
+    oldCode
+) {
+
+    const newName =
+        prompt(
+            "نام و نام خانوادگی جدید:",
+            oldName
+        );
+
+    if (newName === null) {
+        return;
+    }
+
+    const name =
+        newName.trim();
+
+    if (!name) {
+
+        alert(
+            "نام دانش‌آموز نمی‌تواند خالی باشد."
+        );
+
+        return;
+    }
+
+    const newCode =
+        prompt(
+            "کد دانش‌آموزی جدید:",
+            oldCode
+        );
+
+    if (newCode === null) {
+        return;
+    }
+
+    const code =
+        newCode.trim();
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/students/${studentId}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        name,
+                        code
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "خطا در ویرایش دانش‌آموز."
+            );
+
+            return;
+        }
+
+        loadStudents();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// حذف دانش‌آموز
+// ======================================================
+
+async function deleteStudent(studentId) {
+
+    const confirmed =
+        confirm(
+            "آیا مطمئنی می‌خواهی این دانش‌آموز حذف شود؟\n\nنمرات و حضور و غیاب او نیز حذف خواهد شد."
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/students/${studentId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "خطا در حذف دانش‌آموز."
+            );
+
+            return;
+        }
+
+        loadStudents();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// باز کردن کارنامه
+// ======================================================
+
+function openStudentReport(studentId) {
+
+    localStorage.setItem(
+        "selectedStudentId",
+        studentId
+    );
+
+    window.location.href =
+        "student-report.html";
+}
+
+
+// ======================================================
+// جلوگیری از HTML Injection
+// ======================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ======================================================
+// جلوگیری از خراب شدن Attribute
+// ======================================================
+
+function escapeAttribute(value) {
+
+    return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
+}
+
+
+// ======================================================
+// اجرای اولیه
+// ======================================================
+
+loadClass();
+loadStudents();
+
+</script>
+
+</body>
+</html>

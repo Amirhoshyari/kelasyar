@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>حساب کاربری | کلاس‌یار</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f7f5ff;
+            color: #222;
+            min-height: 100vh;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        .header {
+            background: white;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            color: #6946e8;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            border: none;
+            background: #eee8ff;
+            color: #6946e8;
+            padding: 12px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 35px auto 60px;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(80, 50, 150, 0.08);
+        }
+
+        .profile-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #eee8ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            margin: 0 auto 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        input {
+            height: 48px;
+            border: 1px solid #ddd5f8;
+            border-radius: 12px;
+            padding: 0 15px;
+            outline: none;
+            background: #faf9ff;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #6946e8;
+            box-shadow: 0 0 0 3px rgba(105, 70, 232, 0.08);
+        }
+
+        input:disabled {
+            background: #f1eff7;
+            color: #777;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .save-btn {
+            border: none;
+            background: #6946e8;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .save-btn:hover {
+            background: #5633d0;
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .cancel-btn {
+            border: none;
+            background: #eee8ff;
+            color: #6946e8;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .message {
+            display: none;
+            padding: 15px 18px;
+            border-radius: 13px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .message.success {
+            background: #eaf8ef;
+            color: #218838;
+        }
+
+        .message.error {
+            background: #fff0f0;
+            color: #c62828;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .save-btn,
+            .cancel-btn {
+                width: 100%;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        کلاس‌یار
+    </div>
+
+    <button
+        class="back-btn"
+        id="backBtn"
+    >
+        ← بازگشت به داشبورد
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h1>
+            👤 حساب کاربری
+        </h1>
+
+        <p>
+            اطلاعات حساب کاربری خود را مشاهده و ویرایش کنید.
+        </p>
+
+    </div>
+
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        در حال دریافت اطلاعات...
+    </div>
+
+
+    <section
+        id="profileCard"
+        class="profile-card"
+        style="display:none;"
+    >
+
+        <div class="profile-icon">
+            👨‍🏫
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="field">
+
+                <label for="fullName">
+                    نام و نام خانوادگی
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="نام و نام خانوادگی"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="email">
+                    ایمیل
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    disabled
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="school">
+                    نام مدرسه
+                </label>
+
+                <input
+                    type="text"
+                    id="school"
+                    placeholder="نام مدرسه"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="phone">
+                    شماره تلفن
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="شماره تلفن"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="save-btn"
+                id="saveBtn"
+            >
+                💾 ذخیره تغییرات
+            </button>
+
+            <button
+                class="cancel-btn"
+                id="cancelBtn"
+            >
+                انصراف
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const API_URL = "http://localhost:3000";
+
+const token =
+    localStorage.getItem("kelasyarToken");
+
+
+/* =========================
+   بررسی ورود
+========================= */
+
+if (!token) {
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================
+   API
+========================= */
+
+async function apiFetch(
+    url,
+    options = {}
+) {
+
+    options.headers = {
+
+        ...(options.headers || {}),
+
+        "Authorization":
+            "Bearer " + token,
+
+        "Content-Type":
+            "application/json"
+
+    };
+
+
+    const response =
+        await fetch(
+            API_URL + url,
+            options
+        );
+
+
+    if (response.status === 401) {
+
+        localStorage.removeItem(
+            "kelasyarToken"
+        );
+
+        localStorage.removeItem(
+            "kelasyarUser"
+        );
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    return response;
+
+}
+
+
+/* =========================
+   پیام
+========================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+    box.textContent = text;
+
+    box.className =
+        "message " + type;
+
+    box.style.display =
+        "block";
+
+
+    if (type === "success") {
+
+        setTimeout(() => {
+
+            box.style.display =
+                "none";
+
+        }, 3500);
+
+    }
+
+}
+
+
+/* =========================
+   دریافت پروفایل
+========================= */
+
+async function loadProfile() {
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+    const profileCard =
+        document.getElementById(
+            "profileCard"
+        );
+
+
+    loading.style.display =
+        "block";
+
+    profileCard.style.display =
+        "none";
+
+
+    try {
+
+        const response =
+            await apiFetch(
+                "/api/profile"
+            );
+
+
+        if (!response) return;
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "PROFILE RESPONSE:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "خطا در دریافت اطلاعات حساب"
+            );
+
+        }
+
+
+        /*
+           پشتیبانی از چند ساختار مختلف
+        */
+
+        const user =
+            data.user ||
+            data.profile ||
+            data.data ||
+            data;
+
+
+        if (!user ||
+            typeof user !== "object") {
+
+            throw new Error(
+                "اطلاعات کاربر از سرور دریافت نشد."
+            );
+
+        }
+
+
+        /*
+           پیدا کردن نام
+        */
+
+        const fullName =
+            user.full_name ??
+            user.fullName ??
+            user.name ??
+            "";
+
+
+        /*
+           پیدا کردن ایمیل
+        */
+
+        const email =
+            user.email ??
+            "";
+
+
+        /*
+           پیدا کردن مدرسه
+        */
+
+        const school =
+            user.school ??
+            "";
+
+
+        /*
+           پیدا کردن تلفن
+        */
+
+        const phone =
+            user.phone ??
+            "";
+
+
+        document.getElementById(
+            "fullName"
+        ).value =
+            fullName;
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            email;
+
+
+        document.getElementById(
+            "school"
+        ).value =
+            school;
+
+
+        document.getElementById(
+            "phone"
+        ).value =
+            phone;
+
+
+        /*
+           ذخیره کاربر
+        */
+
+        localStorage.setItem(
+            "kelasyarUser",
+            JSON.stringify(user)
+        );
+
+
+        loading.style.display =
+            "none";
+
+
+        profileCard.style.display =
+            "block";
+
+
+    } catch (error) {
+
+        console.error(
+            "Profile Error:",
+            error
+        );
+
+
+        loading.style.display =
+            "none";
+
+
+        profileCard.style.display =
+            "none";
+
+
+        showMessage(
+            error.message ||
+            "خطا در دریافت اطلاعات حساب.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ذخیره پروفایل
+========================= */
+
+async function saveProfile() {
+
+    const fullName =
+        document.getElementById(
+            "fullName"
+        ).value.trim();
+
+
+    const school =
+        document.getElementById(
+            "school"
+        ).value.trim();
+
+
+    const phone =
+        document.getElementById(
+            "phone"
+        ).value.trim();
+
+
+    if (!fullName) {
+
+        showMessage(
+            "لطفاً نام و نام خانوادگی را وارد کنید.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const saveBtn =
+        document.getElementById(
+            "saveBtn"
+        );
+
+
+    saveBtn.disabled = true;
+
+    saveBtn.textContent =
+        "در حال ذخیره...";
+
+
+    try {
+
+        const response =
+            await apiFetch(
+                "/api/profile",
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+
+                        fullName:
+                            fullName,
+
+                        school:
+                            school,
+
+                        phone:
+                            phone
+
+                    })
+                }
+            );
+
+
+        if (!response) return;
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "SAVE PROFILE RESPONSE:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "ذخیره اطلاعات انجام نشد."
+            );
+
+        }
+
+
+        const user =
+            data.user ||
+            data.profile ||
+            data.data ||
+            data;
+
+
+        if (user &&
+            typeof user === "object") {
+
+            localStorage.setItem(
+                "kelasyarUser",
+                JSON.stringify(user)
+            );
+
+        }
+
+
+        showMessage(
+            "اطلاعات حساب با موفقیت ذخیره شد ✅",
+            "success"
+        );
+
+
+        await loadProfile();
+
+
+    } catch (error) {
+
+        console.error(
+            "Save Profile Error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "خطا در ذخیره اطلاعات.",
+            "error"
+        );
+
+    } finally {
+
+        saveBtn.disabled = false;
+
+        saveBtn.textContent =
+            "💾 ذخیره تغییرات";
+
+    }
+
+}
+
+
+/* =========================
+   رویدادها
+========================= */
+
+document.getElementById(
+    "saveBtn"
+).addEventListener(
+    "click",
+    saveProfile
+);
+
+
+document.getElementById(
+    "cancelBtn"
+).addEventListener(
+    "click",
+    loadProfile
+);
+
+
+document.getElementById(
+    "backBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+);
+
+
+/* =========================
+   شروع
+========================= */
+
+loadProfile();
+
+</script>
+
+</body>
+
+</html>

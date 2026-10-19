@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حضور و غیاب | کلاس‌یار</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .class-info {
+            color: #94a3b8;
+        }
+
+        .back-btn {
+            border: none;
+            background: #1e293b;
+            color: white;
+            padding: 13px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #334155;
+        }
+
+        .date-box,
+        .students-box {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .date-box label {
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        #attendanceDate {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: white;
+            border-radius: 10px;
+            padding: 13px;
+            width: 250px;
+            outline: none;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .present {
+            color: #22c55e;
+        }
+
+        .absent {
+            color: #ef4444;
+        }
+
+        .late {
+            color: #f59e0b;
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .box-header h2 {
+            font-size: 22px;
+        }
+
+        .save-btn {
+            border: none;
+            background: #16a34a;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .save-btn:hover {
+            background: #15803d;
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .student-row {
+            background: #0f172a;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .student-number {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #2563eb;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+        }
+
+        .student-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .student-code {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-btn {
+            border: 2px solid transparent;
+            color: white;
+            padding: 11px 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.15s;
+        }
+
+        .status-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .status-btn.present-btn {
+            background: #166534;
+        }
+
+        .status-btn.absent-btn {
+            background: #991b1b;
+        }
+
+        .status-btn.late-btn {
+            background: #92400e;
+        }
+
+        .status-btn.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+            transform: scale(1.04);
+        }
+
+        .loading,
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .message {
+            display: none;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .success {
+            display: block;
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        .error {
+            display: block;
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        @media (max-width: 800px) {
+
+            .top {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .student-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .status-buttons {
+                width: 100%;
+            }
+
+            .status-btn {
+                flex: 1;
+            }
+
+            .box-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .save-btn {
+                width: 100%;
+            }
+
+            #attendanceDate {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <div>
+            <h1>📅 حضور و غیاب</h1>
+
+            <div
+                class="class-info"
+                id="classInfo"
+            >
+                در حال دریافت اطلاعات کلاس...
+            </div>
+        </div>
+
+        <button
+            type="button"
+            class="back-btn"
+            id="backBtn"
+        >
+            ← بازگشت
+        </button>
+
+    </div>
+
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <div class="date-box">
+
+        <label for="attendanceDate">
+            📆 تاریخ
+        </label>
+
+        <input
+            type="date"
+            id="attendanceDate"
+        >
+
+    </div>
+
+
+    <div class="summary">
+
+        <div class="summary-card">
+
+            <div
+                id="presentCount"
+                class="summary-number present"
+            >
+                0
+            </div>
+
+            <div>
+                حاضر
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div
+                id="absentCount"
+                class="summary-number absent"
+            >
+                0
+            </div>
+
+            <div>
+                غایب
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div
+                id="lateCount"
+                class="summary-number late"
+            >
+                0
+            </div>
+
+            <div>
+                تأخیر
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="students-box">
+
+        <div class="box-header">
+
+            <h2>
+                👨‍🎓 لیست دانش‌آموزان
+            </h2>
+
+            <button
+                type="button"
+                id="saveBtn"
+                class="save-btn"
+            >
+                💾 ذخیره حضور و غیاب
+            </button>
+
+        </div>
+
+
+        <div id="studentsContainer">
+
+            <div class="loading">
+                در حال دریافت دانش‌آموزان...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const API_URL = "http://localhost:3000";
+
+const token =
+    localStorage.getItem("kelasyarToken");
+
+const classId =
+    localStorage.getItem("selectedClassId");
+
+
+let students = [];
+
+let attendance = {};
+
+
+/* =========================
+   بررسی ورود
+========================= */
+
+if (!token) {
+
+    window.location.href = "login.html";
+
+}
+
+
+/* =========================
+   بررسی کلاس
+========================= */
+
+if (!classId) {
+
+    alert("ابتدا یک کلاس انتخاب کنید.");
+
+    window.location.href = "classes.html";
+
+}
+
+
+/* =========================
+   عناصر صفحه
+========================= */
+
+const studentsContainer =
+    document.getElementById(
+        "studentsContainer"
+    );
+
+const attendanceDate =
+    document.getElementById(
+        "attendanceDate"
+    );
+
+const presentCount =
+    document.getElementById(
+        "presentCount"
+    );
+
+const absentCount =
+    document.getElementById(
+        "absentCount"
+    );
+
+const lateCount =
+    document.getElementById(
+        "lateCount"
+    );
+
+const classInfo =
+    document.getElementById(
+        "classInfo"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+const saveBtn =
+    document.getElementById(
+        "saveBtn"
+    );
+
+
+/* =========================
+   تاریخ امروز
+========================= */
+
+function today() {
+
+    const date = new Date();
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+attendanceDate.value = today();
+
+
+/* =========================
+   API
+========================= */
+
+async function apiFetch(
+    url,
+    options = {}
+) {
+
+    const headers = {
+        "Authorization":
+            "Bearer " + token,
+
+        ...(options.headers || {})
+    };
+
+
+    const response =
+        await fetch(
+            API_URL + url,
+            {
+                ...options,
+                headers
+            }
+        );
+
+
+    if (response.status === 401) {
+
+        localStorage.clear();
+
+        window.location.href =
+            "login.html";
+
+        return null;
+    }
+
+
+    return response;
+}
+
+
+/* =========================
+   پیام
+========================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    message.textContent =
+        text;
+
+    message.className =
+        "message " + type;
+
+    setTimeout(
+        () => {
+            message.className =
+                "message";
+            message.textContent =
+                "";
+        },
+        3000
+    );
+}
+
+
+/* =========================
+   دریافت کلاس
+========================= */
+
+async function loadClass() {
+
+    const response =
+        await apiFetch(
+            "/api/classes"
+        );
+
+
+    if (!response) return;
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "خطا در دریافت کلاس"
+        );
+
+    }
+
+
+    const classes =
+        Array.isArray(data)
+            ? data
+            : (
+                Array.isArray(data.classes)
+                    ? data.classes
+                    : []
+            );
+
+
+    const selected =
+        classes.find(
+            item =>
+                String(item.id) ===
+                String(classId)
+        );
+
+
+    if (!selected) {
+
+        throw new Error(
+            "کلاس پیدا نشد."
+        );
+
+    }
+
+
+    classInfo.textContent =
+        `${selected.name} | پایه ${selected.grade}`;
+
+}
+
+
+/* =========================
+   دریافت دانش‌آموزان
+========================= */
+
+async function loadStudents() {
+
+    const response =
+        await apiFetch(
+            `/api/classes/${classId}/students`
+        );
+
+
+    if (!response) return;
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "خطا در دریافت دانش‌آموزان"
+        );
+
+    }
+
+
+    students =
+        Array.isArray(data)
+            ? data
+            : (
+                Array.isArray(data.students)
+                    ? data.students
+                    : []
+            );
+
+
+    renderStudents();
+}
+
+
+/* =========================
+   دریافت حضور و غیاب
+========================= */
+
+async function loadAttendance() {
+
+    const date =
+        attendanceDate.value;
+
+
+    const response =
+        await apiFetch(
+            `/api/classes/${classId}/attendance?date=${date}`
+        );
+
+
+    if (!response) return;
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "خطا در دریافت حضور و غیاب"
+        );
+
+    }
+
+
+    attendance = {};
+
+
+    if (
+        data &&
+        data.records
+    ) {
+
+        attendance =
+            data.records;
+
+    }
+    else if (
+        data &&
+        data.attendance
+    ) {
+
+        attendance =
+            data.attendance;
+
+    }
+    else if (
+        Array.isArray(data)
+    ) {
+
+        data.forEach(
+            record => {
+
+                const id =
+                    record.student_id ||
+                    record.studentId;
+
+                if (id) {
+
+                    attendance[
+                        String(id)
+                    ] =
+                        record.status;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+       دانش‌آموزی که وضعیت ندارد
+       به صورت پیش‌فرض حاضر است.
+    */
+
+    students.forEach(
+        student => {
+
+            const id =
+                String(student.id);
+
+            if (
+                !attendance[id]
+            ) {
+
+                attendance[id] =
+                    "present";
+
+            }
+
+        }
+    );
+
+
+    renderStudents();
+}
+
+
+/* =========================
+   نمایش دانش‌آموزان
+========================= */
+
+function renderStudents() {
+
+    if (!students.length) {
+
+        studentsContainer.innerHTML =
+            `
+            <div class="empty">
+                هنوز دانش‌آموزی در این کلاس ثبت نشده است.
+            </div>
+            `;
+
+        updateSummary();
+
+        return;
+    }
+
+
+    studentsContainer.innerHTML =
+        students.map(
+            (student, index) => {
+
+                const id =
+                    String(student.id);
+
+                const status =
+                    attendance[id] ||
+                    "present";
+
+
+                return `
+                    <div
+                        class="student-row"
+                        data-student-id="${id}"
+                    >
+
+                        <div class="student-info">
+
+                            <div class="student-number">
+                                ${index + 1}
+                            </div>
+
+                            <div>
+
+                                <div class="student-name">
+                                    ${escapeHtml(
+                                        student.name
+                                    )}
+                                </div>
+
+                                <div class="student-code">
+                                    کد: ${escapeHtml(
+                                        student.code || "-"
+                                    )}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="status-buttons">
+
+                            <button
+                                type="button"
+                                class="status-btn present-btn ${status === "present" ? "active" : ""}"
+                                data-status="present"
+                                data-student-id="${id}"
+                            >
+                                ✓ حاضر
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="status-btn absent-btn ${status === "absent" ? "active" : ""}"
+                                data-status="absent"
+                                data-student-id="${id}"
+                            >
+                                ✕ غایب
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="status-btn late-btn ${status === "late" ? "active" : ""}"
+                                data-status="late"
+                                data-student-id="${id}"
+                            >
+                                ⏰ تأخیر
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+
+    updateSummary();
+}
+
+
+/* =========================
+   مهم:
+   مدیریت کلیک دکمه‌ها
+========================= */
+
+studentsContainer.addEventListener(
+    "click",
+    function(event) {
+
+        const button =
+            event.target.closest(
+                ".status-btn"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const studentId =
+            button.dataset.studentId;
+
+        const status =
+            button.dataset.status;
+
+
+        console.log(
+            "Attendance clicked:",
+            studentId,
+            status
+        );
+
+
+        if (
+            !studentId ||
+            !status
+        ) {
+
+            console.error(
+                "اطلاعات دکمه ناقص است."
+            );
+
+            return;
+        }
+
+
+        /*
+           وضعیت را ذخیره می‌کنیم
+        */
+
+        attendance[
+            String(studentId)
+        ] = status;
+
+
+        /*
+           فقط دکمه‌های همان دانش‌آموز
+           را فعال می‌کنیم
+        */
+
+        const row =
+            button.closest(
+                ".student-row"
+            );
+
+
+        if (row) {
+
+            row.querySelectorAll(
+                ".status-btn"
+            ).forEach(
+                btn => {
+
+                    btn.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+        }
+
+
+        updateSummary();
+
+    }
+);
+
+
+/* =========================
+   آمار
+========================= */
+
+function updateSummary() {
+
+    let present = 0;
+
+    let absent = 0;
+
+    let late = 0;
+
+
+    students.forEach(
+        student => {
+
+            const status =
+                attendance[
+                    String(student.id)
+                ] ||
+                "present";
+
+
+            if (
+                status === "present"
+            ) {
+
+                present++;
+
+            }
+            else if (
+                status === "absent"
+            ) {
+
+                absent++;
+
+            }
+            else if (
+                status === "late"
+            ) {
+
+                late++;
+
+            }
+
+        }
+    );
+
+
+    presentCount.textContent =
+        present;
+
+    absentCount.textContent =
+        absent;
+
+    lateCount.textContent =
+        late;
+}
+
+
+/* =========================
+   ذخیره
+========================= */
+
+saveBtn.addEventListener(
+    "click",
+    async function() {
+
+        if (!students.length) {
+
+            alert(
+                "دانش‌آموزی وجود ندارد."
+            );
+
+            return;
+        }
+
+
+        saveBtn.disabled = true;
+
+        saveBtn.textContent =
+            "در حال ذخیره...";
+
+
+        try {
+
+            const response =
+                await apiFetch(
+                    `/api/classes/${classId}/attendance`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                date:
+                                    attendanceDate.value,
+
+                                records:
+                                    attendance
+                            })
+                    }
+                );
+
+
+            if (!response) {
+                return;
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "ذخیره انجام نشد."
+                );
+
+            }
+
+
+            showMessage(
+                "حضور و غیاب با موفقیت ذخیره شد ✓",
+                "success"
+            );
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                error.message ||
+                "خطا در ذخیره.",
+                "error"
+            );
+
+        }
+        finally {
+
+            saveBtn.disabled = false;
+
+            saveBtn.textContent =
+                "💾 ذخیره حضور و غیاب";
+
+        }
+
+    }
+);
+
+
+/* =========================
+   تغییر تاریخ
+========================= */
+
+attendanceDate.addEventListener(
+    "change",
+    async function() {
+
+        try {
+
+            await loadAttendance();
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================
+   بازگشت
+========================= */
+
+document.getElementById(
+    "backBtn"
+).addEventListener(
+    "click",
+    function() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+);
+
+
+/* =========================
+   جلوگیری از HTML
+========================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================
+   شروع
+========================= */
+
+async function init() {
+
+    try {
+
+        await loadClass();
+
+        await loadStudents();
+
+        await loadAttendance();
+
+    }
+    catch (error) {
+
+        console.error(
+            "ATTENDANCE ERROR:",
+            error
+        );
+
+
+        studentsContainer.innerHTML =
+            `
+            <div class="empty">
+                ${escapeHtml(
+                    error.message ||
+                    "خطایی رخ داد."
+                )}
+            </div>
+            `;
+
+    }
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>

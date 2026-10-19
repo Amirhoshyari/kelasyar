@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>کلاس‌یار | مدیریت کلاس</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            color: #111827;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           Header
+        ========================= */
+
+        header {
+            width: 100%;
+            padding: 22px 6%;
+            border-bottom: 1px solid #f0f0f0;
+            background: #ffffff;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111827;
+
+            text-decoration: none;
+        }
+
+        .logo span {
+            margin-right: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #111827;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4f46e5;
+        }
+
+        .login-btn {
+            text-decoration: none;
+
+            background: #eee9ff;
+            color: #111827;
+
+            padding: 12px 24px;
+
+            border-radius: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #ddd5ff;
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           Hero
+        ========================= */
+
+        .hero {
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 90px 6% 70px;
+
+            display: grid;
+
+            grid-template-columns: 1.05fr 0.95fr;
+
+            align-items: center;
+
+            gap: 70px;
+        }
+
+
+        /* سمت متن */
+
+        .hero-text {
+            text-align: right;
+        }
+
+        .badge {
+            display: inline-block;
+
+            background: #eee9ff;
+
+            color: #4f46e5;
+
+            padding: 11px 18px;
+
+            border-radius: 30px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            margin-bottom: 25px;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 5vw, 70px);
+
+            line-height: 1.35;
+
+            margin-bottom: 25px;
+
+            color: #050505;
+        }
+
+        .hero h1 span {
+            color: #4f46e5;
+        }
+
+        .hero-description {
+            font-size: 18px;
+
+            line-height: 2;
+
+            color: #6b7280;
+
+            max-width: 650px;
+
+            margin-bottom: 35px;
+        }
+
+        .hero-buttons {
+            display: flex;
+
+            gap: 14px;
+
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            text-decoration: none;
+
+            background: #4f46e5;
+
+            color: white;
+
+            padding: 15px 28px;
+
+            border-radius: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .primary-btn:hover {
+            background: #4338ca;
+
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            text-decoration: none;
+
+            background: white;
+
+            color: #374151;
+
+            border: 1px solid #e5e7eb;
+
+            padding: 15px 28px;
+
+            border-radius: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .secondary-btn:hover {
+            background: #f9fafb;
+        }
+
+
+        /* =========================
+           Dashboard Preview
+        ========================= */
+
+        .preview-wrapper {
+            position: relative;
+        }
+
+        .preview-card {
+            background: white;
+
+            border: 1px solid #f0eef8;
+
+            border-radius: 25px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 25px 70px rgba(79, 70, 229, 0.12);
+
+            transform: rotate(-1deg);
+
+            transition: 0.3s;
+        }
+
+        .preview-card:hover {
+            transform: rotate(0deg) translateY(-5px);
+        }
+
+        .preview-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+        .teacher-box {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .teacher-avatar {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 14px;
+
+            background: #eee9ff;
+
+            color: #4f46e5;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+        .teacher-info small {
+            color: #6b7280;
+
+            display: block;
+
+            margin-bottom: 5px;
+        }
+
+        .teacher-info strong {
+            font-size: 16px;
+        }
+
+        .preview-dot {
+            width: 10px;
+            height: 10px;
+
+            background: #22c55e;
+
+            border-radius: 50%;
+        }
+
+        .preview-title {
+            font-size: 22px;
+
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+        }
+
+        .stat {
+            background: #faf9ff;
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+        .stat-title {
+            color: #6b7280;
+
+            font-size: 14px;
+
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #111827;
+        }
+
+        .preview-footer {
+            margin-top: 20px;
+
+            background: #f8fafc;
+
+            padding: 15px;
+
+            border-radius: 14px;
+
+            text-align: center;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           Features
+        ========================= */
+
+        .features {
+            max-width: 1200px;
+
+            margin: 20px auto 80px;
+
+            padding: 50px 6%;
+        }
+
+        .features-title {
+            text-align: center;
+
+            margin-bottom: 40px;
+        }
+
+        .features-title h2 {
+            font-size: 32px;
+
+            margin-bottom: 12px;
+        }
+
+        .features-title p {
+            color: #6b7280;
+
+            line-height: 1.8;
+        }
+
+        .feature-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+        }
+
+        .feature {
+            background: #faf9ff;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            text-align: center;
+
+            border: 1px solid #f0eef8;
+
+            transition: 0.2s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 15px 30px rgba(0,0,0,.06);
+        }
+
+        .feature-icon {
+            font-size: 35px;
+
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+
+            font-size: 17px;
+        }
+
+        .feature p {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           Footer
+        ========================= */
+
+        footer {
+            border-top: 1px solid #eeeeee;
+
+            padding: 25px 6%;
+
+            text-align: center;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           Mobile
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .hero {
+                grid-template-columns: 1fr;
+
+                text-align: center;
+
+                padding-top: 60px;
+            }
+
+            .hero-text {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 18px 20px;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            .login-btn {
+                padding: 10px 17px;
+            }
+
+            .hero {
+                padding: 55px 20px 40px;
+
+                gap: 45px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .preview-card {
+                padding: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                padding: 35px 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     Header
+========================= -->
+
+<header>
+
+    <nav class="navbar">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            کلاس‌یار 🎓
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="index.html">
+                صفحه اصلی
+            </a>
+
+            <a href="#features">
+                امکانات
+            </a>
+
+            <a href="#about">
+                درباره ما
+            </a>
+
+        </div>
+
+
+        <a
+            href="login.html"
+            class="login-btn"
+        >
+            ورود
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     Hero
+========================= -->
+
+<section class="hero">
+
+
+    <!-- متن -->
+
+    <div class="hero-text">
+
+        <div class="badge">
+            ✨ مدیریت هوشمند کلاس‌ها
+        </div>
+
+
+        <h1>
+            مدیریت کلاس‌هایت را
+            <br>
+            <span>آسان‌تر کن!</span>
+        </h1>
+
+
+        <p class="hero-description">
+
+            با کلاس‌یار کلاس‌ها، دانش‌آموزان،
+            نمرات و حضور و غیاب را در یک
+            محیط ساده و حرفه‌ای مدیریت کن.
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a
+                href="login.html"
+                class="primary-btn"
+            >
+                شروع کار با کلاس‌یار
+            </a>
+
+
+            <a
+                href="#features"
+                class="secondary-btn"
+            >
+                مشاهده امکانات
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- پیش‌نمایش -->
+
+    <div class="preview-wrapper">
+
+        <div class="preview-card">
+
+
+            <div class="preview-top">
+
+                <div class="teacher-box">
+
+                    <div class="teacher-avatar">
+                        م
+                    </div>
+
+                    <div class="teacher-info">
+
+                        <small>
+                            داشبورد معلم
+                        </small>
+
+                        <strong>
+                            خوش آمدید 👋
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-dot"></div>
+
+            </div>
+
+
+            <div class="preview-title">
+                امکانات کلاس‌یار
+            </div>
+
+
+            <div class="stats">
+
+
+                <div class="stat">
+
+                    <div class="stat-icon">
+                        👨‍🎓
+                    </div>
+
+                    <div class="stat-title">
+                        دانش‌آموزان
+                    </div>
+
+                    <div class="stat-number">
+                        مدیریت
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-icon">
+                        📚
+                    </div>
+
+                    <div class="stat-title">
+                        کلاس‌ها
+                    </div>
+
+                    <div class="stat-number">
+                        آسان
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-icon">
+                        📝
+                    </div>
+
+                    <div class="stat-title">
+                        نمرات
+                    </div>
+
+                    <div class="stat-number">
+                        سریع
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-icon">
+                        📋
+                    </div>
+
+                    <div class="stat-title">
+                        حضور و غیاب
+                    </div>
+
+                    <div class="stat-number">
+                        دقیق
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="preview-footer">
+
+                همه ابزارهای مورد نیاز معلم در یک محیط ساده
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     Features
+========================= -->
+
+<section
+    class="features"
+    id="features"
+>
+
+
+    <div class="features-title">
+
+        <h2>
+            امکانات کلاس‌یار
+        </h2>
+
+        <p>
+            ابزارهای مورد نیاز برای مدیریت بهتر کلاس
+        </p>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📚
+            </div>
+
+            <h3>
+                مدیریت کلاس‌ها
+            </h3>
+
+            <p>
+                کلاس‌های مختلف خود را ایجاد و مدیریت کنید.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                👨‍🎓
+            </div>
+
+            <h3>
+                مدیریت دانش‌آموزان
+            </h3>
+
+            <p>
+                اطلاعات دانش‌آموزان هر کلاس را مدیریت کنید.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📝
+            </div>
+
+            <h3>
+                ثبت نمرات
+            </h3>
+
+            <p>
+                برای هر دانش‌آموز چندین نمره ثبت و معدل را مشاهده کنید.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📋
+            </div>
+
+            <h3>
+                حضور و غیاب
+            </h3>
+
+            <p>
+                حضور، غیاب و تأخیر دانش‌آموزان را روزانه ثبت کنید.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     About
+========================= -->
+
+<section
+    class="features"
+    id="about"
+>
+
+    <div class="features-title">
+
+        <h2>
+            درباره کلاس‌یار
+        </h2>
+
+        <p>
+            کلاس‌یار برای ساده‌تر شدن مدیریت روزانه کلاس
+            طراحی شده است تا معلم بتواند اطلاعات کلاس،
+            دانش‌آموزان، نمرات و حضور و غیاب را راحت‌تر مدیریت کند.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     Footer
+========================= -->
+
+<footer>
+
+    © 2026 کلاس‌یار — مدیریت ساده‌تر کلاس
+
+</footer>
+
+
+</body>
+
+</html>

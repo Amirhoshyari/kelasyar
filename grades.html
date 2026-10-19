@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>نمرات | کلاس‌یار</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .page {
+            width: min(1200px, 95%);
+            margin: auto;
+            padding: 30px 0 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .class-info {
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: white;
+            font-family: inherit;
+        }
+
+        .back-btn {
+            background: #334155;
+        }
+
+        .back-btn:hover {
+            background: #475569;
+        }
+
+        .toolbar {
+            background: #1e293b;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .add-grade-btn {
+            background: #2563eb;
+        }
+
+        .save-btn {
+            background: #16a34a;
+        }
+
+        .save-btn:hover {
+            background: #15803d;
+        }
+
+        .table-box {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 18px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #334155;
+            text-align: center;
+        }
+
+        th {
+            background: #0f172a;
+        }
+
+        td:first-child,
+        th:first-child {
+            text-align: right;
+        }
+
+        .grade-input {
+            width: 75px;
+            box-sizing: border-box;
+            padding: 9px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            outline: none;
+        }
+
+        .grade-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .average {
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .remove-grade {
+            background: #dc2626;
+            padding: 5px 9px;
+            margin-right: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 45px;
+        }
+
+        .message {
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px;
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+
+        <div>
+            <h1>📊 نمرات دانش‌آموزان</h1>
+
+            <div
+                id="classInfo"
+                class="class-info"
+            >
+                در حال دریافت اطلاعات...
+            </div>
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goStudents()"
+        >
+            ← دانش‌آموزان
+        </button>
+
+    </div>
+
+
+    <div class="toolbar">
+
+        <button
+            class="add-grade-btn"
+            onclick="addGradeColumn()"
+        >
+            ➕ افزودن نمره
+        </button>
+
+        <button
+            class="save-btn"
+            onclick="saveAllGrades()"
+        >
+            💾 ذخیره نمرات
+        </button>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <div class="table-box">
+
+        <div id="tableContainer">
+
+            <div class="loading">
+                در حال دریافت نمرات...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const API_URL = "http://localhost:3000";
+
+const token =
+    localStorage.getItem("kelasyarToken");
+
+const selectedClassId =
+    localStorage.getItem("selectedClassId");
+
+let students = [];
+
+let gradeCount = 0;
+
+
+// ======================================================
+// بررسی ورود
+// ======================================================
+
+if (!token) {
+    window.location.href = "login.html";
+}
+
+
+// ======================================================
+// بررسی کلاس
+// ======================================================
+
+if (!selectedClassId) {
+
+    alert("ابتدا یک کلاس را انتخاب کنید.");
+
+    window.location.href =
+        "classes.html";
+}
+
+
+// ======================================================
+// عناصر
+// ======================================================
+
+const classInfo =
+    document.getElementById("classInfo");
+
+const tableContainer =
+    document.getElementById("tableContainer");
+
+const message =
+    document.getElementById("message");
+
+
+// ======================================================
+// بازگشت
+// ======================================================
+
+function goStudents() {
+
+    window.location.href =
+        "students.html";
+}
+
+
+// ======================================================
+// پیام
+// ======================================================
+
+function showMessage(
+    text,
+    success = false
+) {
+
+    message.textContent = text;
+
+    message.style.color =
+        success
+            ? "#22c55e"
+            : "#f87171";
+}
+
+
+// ======================================================
+// خروج در صورت منقضی شدن Token
+// ======================================================
+
+function handleUnauthorized() {
+
+    localStorage.removeItem(
+        "kelasyarToken"
+    );
+
+    localStorage.removeItem(
+        "kelasyarUser"
+    );
+
+    window.location.href =
+        "login.html";
+}
+
+
+// ======================================================
+// دریافت کلاس و دانش‌آموزان
+// ======================================================
+
+async function loadData() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/classes/${selectedClassId}/students`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
+        if (!data.success) {
+
+            tableContainer.innerHTML = `
+                <div class="empty">
+                    ❌ ${escapeHtml(
+                        data.message ||
+                        "خطا در دریافت اطلاعات"
+                    )}
+                </div>
+            `;
+
+            return;
+        }
+
+        students = data.students || [];
+
+
+        /*
+         * بیشترین تعداد نمره بین دانش‌آموزان
+         * تعیین می‌شود تا جدول درست ساخته شود.
+         */
+
+        gradeCount = 0;
+
+        students.forEach(student => {
+
+            const grades =
+                Array.isArray(student.grades)
+                    ? student.grades
+                    : [];
+
+            if (grades.length > gradeCount) {
+                gradeCount = grades.length;
+            }
+
+        });
+
+
+        /*
+         * اگر هنوز هیچ نمره‌ای وجود نداشته باشد،
+         * یک ستون نمره ایجاد می‌کنیم.
+         */
+
+        if (gradeCount === 0) {
+            gradeCount = 1;
+        }
+
+
+        loadClassName();
+
+        renderTable();
+
+    } catch (error) {
+
+        console.error(error);
+
+        tableContainer.innerHTML = `
+            <div class="empty">
+                ❌ اتصال به سرور برقرار نشد.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// دریافت نام کلاس
+// ======================================================
+
+async function loadClassName() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/classes`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            return;
+        }
+
+        const currentClass =
+            data.classes.find(
+                item =>
+                    item.id === selectedClassId
+            );
+
+        if (!currentClass) {
+            return;
+        }
+
+        classInfo.textContent =
+            `${currentClass.name} | پایه: ${currentClass.grade || "مشخص نشده"}`;
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+// ======================================================
+// ساخت جدول
+// ======================================================
+
+function renderTable() {
+
+    if (!students.length) {
+
+        tableContainer.innerHTML = `
+            <div class="empty">
+
+                👨‍🎓 هنوز دانش‌آموزی در این کلاس وجود ندارد.
+
+                <br><br>
+
+                ابتدا از بخش دانش‌آموزان،
+                دانش‌آموز اضافه کن.
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    let html = `
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        دانش‌آموز
+                    </th>
+    `;
+
+
+    for (
+        let i = 0;
+        i < gradeCount;
+        i++
+    ) {
+
+        html += `
+            <th>
+
+                نمره ${toPersianNumber(i + 1)}
+
+                <button
+                    class="remove-grade"
+                    onclick="removeGradeColumn(${i})"
+                    title="حذف ستون"
+                >
+                    ×
+                </button>
+
+            </th>
+        `;
+    }
+
+
+    html += `
+                    <th>
+                        میانگین
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+    `;
+
+
+    students.forEach((student, studentIndex) => {
+
+        const grades =
+            Array.isArray(student.grades)
+                ? student.grades
+                : [];
+
+
+        html += `
+            <tr>
+
+                <td>
+
+                    <strong>
+                        ${escapeHtml(student.name)}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        ${escapeHtml(
+                            student.code ||
+                            "بدون کد"
+                        )}
+                    </small>
+
+                </td>
+        `;
+
+
+        for (
+            let gradeIndex = 0;
+            gradeIndex < gradeCount;
+            gradeIndex++
+        ) {
+
+            const value =
+                grades[gradeIndex] ??
+                "";
+
+            html += `
+                <td>
+
+                    <input
+                        class="grade-input"
+                        type="number"
+                        min="0"
+                        max="20"
+                        step="0.25"
+                        value="${value}"
+                        data-student="${studentIndex}"
+                        data-grade="${gradeIndex}"
+                        oninput="updateAverage(${studentIndex})"
+                    >
+
+                </td>
+            `;
+        }
+
+
+        html += `
+                <td>
+
+                    <span
+                        class="average"
+                        id="average-${studentIndex}"
+                    >
+                        -
+                    </span>
+
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+
+    html += `
+            </tbody>
+
+        </table>
+    `;
+
+
+    tableContainer.innerHTML =
+        html;
+
+
+    students.forEach(
+        (_, index) => {
+            updateAverage(index);
+        }
+    );
+}
+
+
+// ======================================================
+// افزودن ستون نمره
+// ======================================================
+
+function addGradeColumn() {
+
+    gradeCount++;
+
+    students.forEach(student => {
+
+        if (!Array.isArray(student.grades)) {
+            student.grades = [];
+        }
+
+        student.grades.push("");
+
+    });
+
+    renderTable();
+}
+
+
+// ======================================================
+// حذف ستون نمره
+// ======================================================
+
+function removeGradeColumn(index) {
+
+    if (gradeCount <= 1) {
+
+        alert(
+            "حداقل یک ستون نمره باید وجود داشته باشد."
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `نمره ${toPersianNumber(index + 1)} برای همه دانش‌آموزان حذف شود؟`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    students.forEach(student => {
+
+        if (
+            Array.isArray(student.grades)
+        ) {
+
+            student.grades.splice(
+                index,
+                1
+            );
+        }
+
+    });
+
+
+    gradeCount--;
+
+    renderTable();
+}
+
+
+// ======================================================
+// محاسبه میانگین
+// ======================================================
+
+function updateAverage(studentIndex) {
+
+    const inputs =
+        document.querySelectorAll(
+            `input[data-student="${studentIndex}"]`
+        );
+
+
+    const values = [];
+
+
+    inputs.forEach(input => {
+
+        const value =
+            input.value.trim();
+
+        if (value !== "") {
+
+            const number =
+                Number(value);
+
+            if (
+                !Number.isNaN(number) &&
+                number >= 0 &&
+                number <= 20
+            ) {
+                values.push(number);
+            }
+        }
+    });
+
+
+    const averageElement =
+        document.getElementById(
+            `average-${studentIndex}`
+        );
+
+
+    if (!values.length) {
+
+        averageElement.textContent =
+            "-";
+
+        return;
+    }
+
+
+    const sum =
+        values.reduce(
+            (a, b) => a + b,
+            0
+        );
+
+
+    const average =
+        sum / values.length;
+
+
+    averageElement.textContent =
+        average.toFixed(2);
+}
+
+
+// ======================================================
+// ذخیره همه نمرات
+// ======================================================
+
+async function saveAllGrades() {
+
+    if (!students.length) {
+
+        showMessage(
+            "دانش‌آموزی برای ذخیره نمره وجود ندارد."
+        );
+
+        return;
+    }
+
+
+    const allInputs =
+        document.querySelectorAll(
+            ".grade-input"
+        );
+
+
+    /*
+     * ابتدا مقادیر Inputها را
+     * داخل آرایه دانش‌آموزان قرار می‌دهیم.
+     */
+
+    students.forEach(student => {
+
+        student.grades =
+            new Array(gradeCount)
+                .fill("");
+
+    });
+
+
+    let hasError = false;
+
+
+    allInputs.forEach(input => {
+
+        const studentIndex =
+            Number(
+                input.dataset.student
+            );
+
+        const gradeIndex =
+            Number(
+                input.dataset.grade
+            );
+
+        const value =
+            input.value.trim();
+
+
+        if (value === "") {
+            return;
+        }
+
+
+        const number =
+            Number(value);
+
+
+        if (
+            Number.isNaN(number) ||
+            number < 0 ||
+            number > 20
+        ) {
+
+            hasError = true;
+
+            input.style.borderColor =
+                "#ef4444";
+
+            return;
+        }
+
+
+        input.style.borderColor =
+            "#475569";
+
+
+        students[
+            studentIndex
+        ].grades[
+            gradeIndex
+        ] = number;
+
+    });
+
+
+    if (hasError) {
+
+        showMessage(
+            "نمره باید بین ۰ تا ۲۰ باشد."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        /*
+         * نمرات هر دانش‌آموز جداگانه
+         * به Backend ارسال می‌شوند.
+         */
+
+        for (
+            const student of students
+        ) {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/students/${student.id}/grades`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${token}`
+                        },
+
+                        body: JSON.stringify({
+                            grades:
+                                student.grades
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (response.status === 401) {
+
+                handleUnauthorized();
+
+                return;
+            }
+
+
+            if (!data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "خطا در ذخیره نمره"
+                );
+            }
+        }
+
+
+        showMessage(
+            "تمام نمرات با موفقیت ذخیره شدند ✅",
+            true
+        );
+
+
+        /*
+         * دوباره از دیتابیس می‌خوانیم
+         * تا مطمئن شویم اطلاعات ذخیره شده.
+         */
+
+        await loadData();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "خطا در ذخیره نمرات."
+        );
+    }
+}
+
+
+// ======================================================
+// تبدیل اعداد به فارسی
+// ======================================================
+
+function toPersianNumber(number) {
+
+    return String(number)
+        .replace(
+            /\d/g,
+            digit =>
+                "۰۱۲۳۴۵۶۷۸۹"[digit]
+        );
+}
+
+
+// ======================================================
+// امنیت HTML
+// ======================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ======================================================
+// شروع
+// ======================================================
+
+loadData();
+
+</script>
+
+</body>
+</html>

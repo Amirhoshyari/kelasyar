@@ -1,0 +1,24 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Uploads
+backend/uploads/
+
+# VS Code
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>کلاس‌ها | کلاس‌یار</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .page {
+            width: min(1100px, 94%);
+            margin: 0 auto;
+            padding: 30px 0 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .back-btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 18px;
+            background: #1e293b;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #334155;
+        }
+
+        .add-box {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-box h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #38bdf8;
+        }
+
+        .primary-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 0 22px;
+            background: #0ea5e9;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .primary-btn:hover {
+            background: #0284c7;
+        }
+
+        .message {
+            margin-top: 14px;
+            min-height: 20px;
+            font-size: 14px;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .class-card {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .class-card h3 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .class-grade {
+            color: #94a3b8;
+            margin-bottom: 18px;
+        }
+
+        .student-count {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 80px;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            color: white;
+            background: #334155;
+        }
+
+        .action-btn:hover {
+            background: #475569;
+        }
+
+        .students-btn {
+            background: #2563eb;
+        }
+
+        .students-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .primary-btn {
+                padding: 13px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+        <h1>📚 کلاس‌های من</h1>
+
+        <button class="back-btn" onclick="goDashboard()">
+            ← داشبورد
+        </button>
+    </div>
+
+    <!-- افزودن کلاس -->
+    <div class="add-box">
+
+        <h2>➕ افزودن کلاس جدید</h2>
+
+        <div class="form-grid">
+
+            <input
+                type="text"
+                id="className"
+                placeholder="نام کلاس، مثلاً هفتم الف"
+            >
+
+            <input
+                type="text"
+                id="classGrade"
+                placeholder="پایه، مثلاً هفتم"
+            >
+
+            <button
+                class="primary-btn"
+                onclick="addClass()"
+            >
+                افزودن کلاس
+            </button>
+
+        </div>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+    <!-- لیست کلاس‌ها -->
+    <div id="classesContainer">
+
+        <div class="loading">
+            در حال دریافت کلاس‌ها...
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = "http://localhost:3000";
+
+
+// ======================================================
+// بررسی ورود
+// ======================================================
+
+const token = localStorage.getItem("kelasyarToken");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+
+
+// ======================================================
+// داشبورد
+// ======================================================
+
+function goDashboard() {
+    window.location.href = "dashboard.html";
+}
+
+
+// ======================================================
+// پیام
+// ======================================================
+
+function showMessage(text, success = false) {
+
+    const message = document.getElementById("message");
+
+    message.textContent = text;
+
+    message.style.color = success
+        ? "#22c55e"
+        : "#f87171";
+}
+
+
+// ======================================================
+// دریافت کلاس‌ها
+// ======================================================
+
+async function loadClasses() {
+
+    const container =
+        document.getElementById("classesContainer");
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/classes`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+
+            localStorage.removeItem("kelasyarToken");
+            localStorage.removeItem("kelasyarUser");
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        if (!data.success) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    ❌ ${escapeHtml(data.message || "خطا در دریافت کلاس‌ها")}
+                </div>
+            `;
+
+            return;
+        }
+
+        renderClasses(data.classes);
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="empty">
+                ❌ اتصال به سرور برقرار نشد.
+                <br>
+                مطمئن شو Backend در حال اجراست.
+            </div>
+        `;
+    }
+}
+
+
+// ======================================================
+// نمایش کلاس‌ها
+// ======================================================
+
+function renderClasses(classes) {
+
+    const container =
+        document.getElementById("classesContainer");
+
+    if (!classes || classes.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                📚 هنوز کلاسی ایجاد نکرده‌ای.
+                <br><br>
+                از قسمت بالا اولین کلاس خودت را اضافه کن.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="classes-grid">
+
+            ${classes.map(classItem => `
+
+                <div class="class-card">
+
+                    <h3>
+                        ${escapeHtml(classItem.name)}
+                    </h3>
+
+                    <div class="class-grade">
+                        پایه:
+                        ${escapeHtml(classItem.grade || "مشخص نشده")}
+                    </div>
+
+                    <div class="student-count">
+                        👨‍🎓
+                        ${classItem.students?.length || 0}
+                        دانش‌آموز
+                    </div>
+
+                    <div class="actions">
+
+                        <button
+                            class="action-btn students-btn"
+                            onclick="openStudents('${classItem.id}')"
+                        >
+                            دانش‌آموزان
+                        </button>
+
+                        <button
+                            class="action-btn"
+                            onclick="editClass('${classItem.id}', '${escapeAttribute(classItem.name)}', '${escapeAttribute(classItem.grade || "")}')"
+                        >
+                            ویرایش
+                        </button>
+
+                        <button
+                            class="action-btn delete-btn"
+                            onclick="deleteClass('${classItem.id}')"
+                        >
+                            حذف
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+    `;
+}
+
+
+// ======================================================
+// افزودن کلاس
+// ======================================================
+
+async function addClass() {
+
+    const nameInput =
+        document.getElementById("className");
+
+    const gradeInput =
+        document.getElementById("classGrade");
+
+    const name =
+        nameInput.value.trim();
+
+    const grade =
+        gradeInput.value.trim();
+
+    if (!name) {
+
+        showMessage("لطفاً نام کلاس را وارد کنید.");
+
+        nameInput.focus();
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/classes`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+
+                body: JSON.stringify({
+                    name,
+                    grade
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+
+            localStorage.removeItem("kelasyarToken");
+            localStorage.removeItem("kelasyarUser");
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        if (!data.success) {
+
+            showMessage(
+                data.message || "خطا در ایجاد کلاس."
+            );
+
+            return;
+        }
+
+        nameInput.value = "";
+        gradeInput.value = "";
+
+        showMessage(
+            "کلاس با موفقیت ایجاد شد ✅",
+            true
+        );
+
+        loadClasses();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// ویرایش کلاس
+// ======================================================
+
+async function editClass(
+    classId,
+    oldName,
+    oldGrade
+) {
+
+    const newName = prompt(
+        "نام جدید کلاس:",
+        oldName
+    );
+
+    if (newName === null) {
+        return;
+    }
+
+    const trimmedName =
+        newName.trim();
+
+    if (!trimmedName) {
+
+        alert("نام کلاس نمی‌تواند خالی باشد.");
+
+        return;
+    }
+
+    const newGrade = prompt(
+        "پایه جدید:",
+        oldGrade
+    );
+
+    if (newGrade === null) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/classes/${classId}`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+
+                body: JSON.stringify({
+                    name: trimmedName,
+                    grade: newGrade.trim()
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+
+            localStorage.removeItem("kelasyarToken");
+            localStorage.removeItem("kelasyarUser");
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "خطا در ویرایش کلاس."
+            );
+
+            return;
+        }
+
+        loadClasses();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// حذف کلاس
+// ======================================================
+
+async function deleteClass(classId) {
+
+    const confirmed = confirm(
+        "آیا مطمئنی می‌خواهی این کلاس را حذف کنی؟\n\nتمام دانش‌آموزان، نمرات و حضور و غیاب این کلاس نیز حذف خواهند شد."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/classes/${classId}`,
+            {
+                method: "DELETE",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+
+            localStorage.removeItem("kelasyarToken");
+            localStorage.removeItem("kelasyarUser");
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "خطا در حذف کلاس."
+            );
+
+            return;
+        }
+
+        loadClasses();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "اتصال به سرور برقرار نشد."
+        );
+    }
+}
+
+
+// ======================================================
+// ورود به دانش‌آموزان
+// ======================================================
+
+function openStudents(classId) {
+
+    localStorage.setItem(
+        "selectedClassId",
+        classId
+    );
+
+    window.location.href =
+        "students.html";
+}
+
+
+// ======================================================
+// جلوگیری از HTML Injection
+// ======================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ======================================================
+// جلوگیری از خراب شدن Attribute
+// ======================================================
+
+function escapeAttribute(value) {
+
+    return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
+}
+
+
+// ======================================================
+// شروع صفحه
+// ======================================================
+
+loadClasses();
+
+</script>
+
+</body>
+</html>

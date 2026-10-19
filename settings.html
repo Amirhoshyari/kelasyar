@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>تنظیمات | کلاس‌یار</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f7f5ff;
+            color: #222;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .header {
+            background: white;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            color: #6946e8;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            border: none;
+            background: #eee8ff;
+            color: #6946e8;
+            padding: 12px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 35px auto 60px;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 22px;
+            padding: 10px 25px;
+            box-shadow: 0 8px 25px rgba(80, 50, 150, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #6946e8;
+            padding: 20px 0 10px;
+        }
+
+        .setting-row {
+            min-height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .setting-info p {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .switch {
+            position: relative;
+            width: 55px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background: #ccc;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            right: 4px;
+            top: 4px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .switch input:checked + .slider {
+            background: #6946e8;
+        }
+
+        .switch input:checked + .slider::before {
+            transform: translateX(-25px);
+        }
+
+        .danger-btn {
+            border: none;
+            background: #ffe8e8;
+            color: #d62828;
+            padding: 11px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .danger-btn:hover {
+            background: #ffd4d4;
+        }
+
+        .app-info {
+            text-align: center;
+            color: #999;
+            padding: 25px 0;
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        /* حالت تاریک */
+
+        body.dark {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        body.dark .header {
+            background: #111827;
+            box-shadow: none;
+        }
+
+        body.dark .back-btn {
+            background: #1e293b;
+            color: #a78bfa;
+        }
+
+        body.dark .page-title p {
+            color: #94a3b8;
+        }
+
+        body.dark .settings-card {
+            background: #1e293b;
+            box-shadow: none;
+        }
+
+        body.dark .setting-row {
+            border-bottom-color: #334155;
+        }
+
+        body.dark .setting-info p {
+            color: #94a3b8;
+        }
+
+        body.dark .danger-btn {
+            background: #3b1d25;
+            color: #ff7b7b;
+        }
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .setting-row {
+                min-height: 90px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        کلاس‌یار
+    </div>
+
+    <button
+        class="back-btn"
+        id="backBtn"
+    >
+        ← بازگشت به داشبورد
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h1>⚙️ تنظیمات</h1>
+
+        <p>
+            تنظیمات برنامه کلاس‌یار را مدیریت کنید.
+        </p>
+
+    </div>
+
+
+    <!-- تنظیمات ظاهری -->
+
+    <section class="settings-card">
+
+        <div class="settings-title">
+            🎨 ظاهر برنامه
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    حالت تاریک
+                </h3>
+
+                <p>
+                    ظاهر برنامه را به حالت تاریک تغییر دهید.
+                </p>
+
+            </div>
+
+
+            <label class="switch">
+
+                <input
+                    type="checkbox"
+                    id="darkMode"
+                >
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- اعلان‌ها -->
+
+    <section class="settings-card">
+
+        <div class="settings-title">
+            🔔 اعلان‌ها
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    فعال بودن اعلان‌ها
+                </h3>
+
+                <p>
+                    اعلان‌های مربوط به برنامه را فعال یا غیرفعال کنید.
+                </p>
+
+            </div>
+
+
+            <label class="switch">
+
+                <input
+                    type="checkbox"
+                    id="notifications"
+                >
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- اطلاعات -->
+
+    <section class="settings-card">
+
+        <div class="settings-title">
+            ℹ️ اطلاعات برنامه
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    نام برنامه
+                </h3>
+
+                <p>
+                    کلاس‌یار
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    نسخه
+                </h3>
+
+                <p>
+                    نسخه 1.0.0
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    وضعیت
+                </h3>
+
+                <p>
+                    برنامه فعال و آماده استفاده است.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- اطلاعات محلی -->
+
+    <section class="settings-card">
+
+        <div class="settings-title">
+            🗑️ اطلاعات محلی
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    پاک کردن تنظیمات محلی
+                </h3>
+
+                <p>
+                    تنظیمات ظاهری و انتخاب‌های ذخیره‌شده روی این دستگاه حذف می‌شوند.
+                </p>
+
+            </div>
+
+
+            <button
+                class="danger-btn"
+                id="clearBtn"
+            >
+                پاک کردن
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <div class="app-info">
+
+        کلاس‌یار ❤️
+
+        <br>
+
+        سیستم مدیریت کلاس و دانش‌آموزان
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* =========================
+   عناصر
+========================= */
+
+const darkMode =
+    document.getElementById(
+        "darkMode"
+    );
+
+const notifications =
+    document.getElementById(
+        "notifications"
+    );
+
+const clearBtn =
+    document.getElementById(
+        "clearBtn"
+    );
+
+const backBtn =
+    document.getElementById(
+        "backBtn"
+    );
+
+
+/* =========================
+   حالت تاریک
+========================= */
+
+const savedDarkMode =
+    localStorage.getItem(
+        "kelasyarDarkMode"
+    );
+
+
+if (savedDarkMode === "true") {
+
+    document.body.classList.add(
+        "dark"
+    );
+
+    darkMode.checked = true;
+
+}
+
+
+/* =========================
+   اعلان‌ها
+========================= */
+
+const savedNotifications =
+    localStorage.getItem(
+        "kelasyarNotifications"
+    );
+
+
+if (
+    savedNotifications === null ||
+    savedNotifications === "true"
+) {
+
+    notifications.checked = true;
+
+} else {
+
+    notifications.checked = false;
+
+}
+
+
+/* =========================
+   تغییر حالت تاریک
+========================= */
+
+darkMode.addEventListener(
+    "change",
+    () => {
+
+        const enabled =
+            darkMode.checked;
+
+
+        document.body.classList.toggle(
+            "dark",
+            enabled
+        );
+
+
+        localStorage.setItem(
+            "kelasyarDarkMode",
+            String(enabled)
+        );
+
+    }
+);
+
+
+/* =========================
+   اعلان‌ها
+========================= */
+
+notifications.addEventListener(
+    "change",
+    () => {
+
+        localStorage.setItem(
+            "kelasyarNotifications",
+            String(
+                notifications.checked
+            )
+        );
+
+    }
+);
+
+
+/* =========================
+   پاک کردن تنظیمات
+========================= */
+
+clearBtn.addEventListener(
+    "click",
+    () => {
+
+        const confirmed =
+            confirm(
+                "آیا مطمئن هستید که تنظیمات محلی پاک شود؟"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        localStorage.removeItem(
+            "kelasyarDarkMode"
+        );
+
+        localStorage.removeItem(
+            "kelasyarNotifications"
+        );
+
+
+        alert(
+            "تنظیمات محلی پاک شد."
+        );
+
+
+        location.reload();
+
+    }
+);
+
+
+/* =========================
+   بازگشت
+========================= */
+
+backBtn.addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

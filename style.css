@@ -1,0 +1,457 @@
+```css
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #6c4ce3;
+    --primary-dark: #5133c4;
+    --background: #f8f7ff;
+    --white: #ffffff;
+    --text: #25213b;
+    --muted: #77738d;
+    --border: #ece9f7;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.9;
+}
+
+button,
+a {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* سربرگ */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 7%;
+    background: white;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.header nav {
+    display: flex;
+    gap: 25px;
+}
+
+.header nav a {
+    color: var(--muted);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.header nav a:hover {
+    color: var(--primary);
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* دکمه‌ها */
+
+.register-btn,
+.login-btn,
+.secondary-btn {
+    border-radius: 10px;
+    padding: 11px 19px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    transition: 0.2s;
+}
+
+.register-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.register-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.login-btn {
+    background: #f0ecff;
+    color: var(--primary);
+}
+
+.login-btn:hover {
+    background: #e4dcff;
+}
+
+.secondary-btn {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* بخش معرفی */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 60px;
+    padding: 85px 9%;
+}
+
+.badge {
+    display: inline-block;
+    background: #ece7ff;
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.hero-text h1 {
+    font-size: clamp(32px, 4vw, 50px);
+    line-height: 1.6;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.hero-text h1 span {
+    display: block;
+    color: var(--primary);
+}
+
+.hero-text > p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+    margin-bottom: 25px;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.hero-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 25px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* کارت داشبورد */
+
+.hero-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 27px;
+    box-shadow: 0 20px 60px rgba(82, 55, 164, 0.09);
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.small-text {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.card-top h2 {
+    font-size: 20px;
+    margin-top: 4px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: #eee9ff;
+    color: var(--primary);
+    border-radius: 15px;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat {
+    background: #faf9ff;
+    border: 1px solid var(--border);
+    padding: 17px;
+    border-radius: 15px;
+}
+
+.stat span {
+    font-size: 25px;
+}
+
+.stat p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+.stat h3 {
+    font-size: 27px;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+.attendance-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.attendance-box strong {
+    font-size: 14px;
+}
+
+.attendance-box p {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.attendance-number {
+    font-size: 24px;
+    color: #16a36a;
+    font-weight: 800;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 9px;
+    background: #e8f6ed;
+    border-radius: 20px;
+    margin-top: 13px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 92%;
+    height: 100%;
+    background: #24b47e;
+    border-radius: 20px;
+}
+
+.demo-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 15px;
+}
+
+/* امکانات */
+
+.features {
+    padding: 75px 8%;
+    background: white;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title > span {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.section-title h2 {
+    font-size: 28px;
+    margin: 10px 0;
+}
+
+.section-title p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.feature-card {
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 22px;
+    background: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(82, 55, 164, 0.08);
+}
+
+.feature-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    background: #f0ecff;
+    font-size: 25px;
+    margin-bottom: 17px;
+}
+
+.feature-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* درباره ما */
+
+.about {
+    text-align: center;
+    padding: 70px 10%;
+}
+
+.about h2 {
+    font-size: 27px;
+    margin-bottom: 15px;
+}
+
+.about p {
+    color: var(--muted);
+    max-width: 650px;
+    margin: auto;
+    font-size: 14px;
+}
+
+/* پایین صفحه */
+
+footer {
+    background: #292244;
+    color: #e9e4ff;
+    text-align: center;
+    padding: 25px;
+    font-size: 13px;
+}
+
+/* نمایش در موبایل */
+
+@media (max-width: 950px) {
+    .header {
+        flex-wrap: wrap;
+        padding: 18px 5%;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 55px 7%;
+        gap: 35px;
+    }
+
+    .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        justify-content: center;
+    }
+
+    .header nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    .header nav a {
+        font-size: 12px;
+    }
+
+    .header-buttons {
+        gap: 6px;
+    }
+
+    .register-btn,
+    .login-btn,
+    .secondary-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .hero {
+        padding: 40px 6%;
+    }
+
+    .hero-text h1 {
+        font-size: 32px;
+    }
+
+    .hero-card {
+        padding: 18px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title h2 {
+        font-size: 23px;
+    }
+}
+```
