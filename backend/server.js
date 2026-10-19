@@ -8,18 +8,16 @@ const crypto = require("crypto");
 
 const app = express();
 
-const PORT = 3000;
-const JWT_SECRET = "kelasyar-secret-key-2026";
-
-// ======================================================
-// تنظیمات
-// ======================================================
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET =
+    process.env.JWT_SECRET || "kelasyar-secret-key-2026";
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ======================================================
-// دیتابیس SQLite
+// DATABASE
 // ======================================================
 
 const dbPath = path.join(__dirname, "kelasyar.db");
@@ -28,82 +26,78 @@ const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
-// ======================================================
-// ساخت جداول
-// ======================================================
-
 db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        full_name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        school TEXT DEFAULT '',
-        phone TEXT DEFAULT '',
-        created_at TEXT NOT NULL
-    );
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    school TEXT DEFAULT '',
+    phone TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+);
 
-    CREATE TABLE IF NOT EXISTS classes (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        grade TEXT DEFAULT '',
-        created_at TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS classes (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    grade TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
 
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-    );
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+);
 
-    CREATE TABLE IF NOT EXISTS students (
-        id TEXT PRIMARY KEY,
-        class_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        code TEXT DEFAULT '',
-        created_at TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS students (
+    id TEXT PRIMARY KEY,
+    class_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    code TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
 
-        FOREIGN KEY (class_id)
-        REFERENCES classes(id)
-        ON DELETE CASCADE
-    );
+    FOREIGN KEY (class_id)
+    REFERENCES classes(id)
+    ON DELETE CASCADE
+);
 
-    CREATE TABLE IF NOT EXISTS grades (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        student_id TEXT NOT NULL,
-        position INTEGER NOT NULL,
-        grade REAL NOT NULL,
+CREATE TABLE IF NOT EXISTS grades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    grade REAL NOT NULL,
 
-        FOREIGN KEY (student_id)
-        REFERENCES students(id)
-        ON DELETE CASCADE,
+    FOREIGN KEY (student_id)
+    REFERENCES students(id)
+    ON DELETE CASCADE,
 
-        UNIQUE(student_id, position)
-    );
+    UNIQUE(student_id, position)
+);
 
-    CREATE TABLE IF NOT EXISTS attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        class_id TEXT NOT NULL,
-        student_id TEXT NOT NULL,
-        date TEXT NOT NULL,
-        status TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS attendance (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_id TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT NOT NULL,
 
-        FOREIGN KEY (class_id)
-        REFERENCES classes(id)
-        ON DELETE CASCADE,
+    FOREIGN KEY (class_id)
+    REFERENCES classes(id)
+    ON DELETE CASCADE,
 
-        FOREIGN KEY (student_id)
-        REFERENCES students(id)
-        ON DELETE CASCADE,
+    FOREIGN KEY (student_id)
+    REFERENCES students(id)
+    ON DELETE CASCADE,
 
-        UNIQUE(student_id, date)
-    );
+    UNIQUE(student_id, date)
+);
 `);
 
 console.log("SQLite database ready:");
 console.log(dbPath);
 
 // ======================================================
-// ابزارهای کمکی
+// HELPERS
 // ======================================================
 
 function createId() {
@@ -127,10 +121,6 @@ function createToken(user) {
     );
 }
 
-// ======================================================
-// احراز هویت
-// ======================================================
-
 function authMiddleware(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
@@ -144,21 +134,24 @@ function authMiddleware(req, res, next) {
 
         const parts = authHeader.split(" ");
 
-        if (parts.length !== 2 || parts[0] !== "Bearer") {
+        if (
+            parts.length !== 2 ||
+            parts[0] !== "Bearer"
+        ) {
             return res.status(401).json({
                 success: false,
                 message: "توکن نامعتبر است."
             });
         }
 
-        const token = parts[1];
-
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(
+            parts[1],
+            JWT_SECRET
+        );
 
         req.user = decoded;
 
         next();
-
     } catch (error) {
         return res.status(401).json({
             success: false,
@@ -166,10 +159,6 @@ function authMiddleware(req, res, next) {
         });
     }
 }
-
-// ======================================================
-// بررسی مالکیت کلاس
-// ======================================================
 
 function getClassForUser(classId, userId) {
     return db.prepare(`
@@ -181,7 +170,7 @@ function getClassForUser(classId, userId) {
 }
 
 // ======================================================
-// صفحه اصلی
+// HOME
 // ======================================================
 
 app.get("/", (req, res) => {
@@ -194,7 +183,7 @@ app.get("/", (req, res) => {
 });
 
 // ======================================================
-// وضعیت سرور
+// STATUS
 // ======================================================
 
 app.get("/api/status", (req, res) => {
@@ -207,7 +196,7 @@ app.get("/api/status", (req, res) => {
 });
 
 // ======================================================
-// ثبت نام
+// REGISTER
 // ======================================================
 
 app.post("/api/register", async (req, res) => {
@@ -232,7 +221,8 @@ app.post("/api/register", async (req, res) => {
             });
         }
 
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedEmail =
+            email.trim().toLowerCase();
 
         const existingUser = db.prepare(`
             SELECT id
@@ -247,7 +237,8 @@ app.post("/api/register", async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
 
         const userId = createId();
 
@@ -272,8 +263,6 @@ app.post("/api/register", async (req, res) => {
             now()
         );
 
-        console.log("حساب جدید ساخته شد:", normalizedEmail);
-
         res.status(201).json({
             success: true,
             message: "حساب کاربری با موفقیت ساخته شد.",
@@ -283,7 +272,6 @@ app.post("/api/register", async (req, res) => {
                 email: normalizedEmail
             }
         });
-
     } catch (error) {
         console.error("Register Error:", error);
 
@@ -295,7 +283,7 @@ app.post("/api/register", async (req, res) => {
 });
 
 // ======================================================
-// ورود
+// LOGIN
 // ======================================================
 
 app.post("/api/login", async (req, res) => {
@@ -312,7 +300,8 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedEmail =
+            email.trim().toLowerCase();
 
         const user = db.prepare(`
             SELECT *
@@ -327,10 +316,11 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        const passwordCorrect = await bcrypt.compare(
-            password,
-            user.password
-        );
+        const passwordCorrect =
+            await bcrypt.compare(
+                password,
+                user.password
+            );
 
         if (!passwordCorrect) {
             return res.status(401).json({
@@ -340,8 +330,6 @@ app.post("/api/login", async (req, res) => {
         }
 
         const token = createToken(user);
-
-        console.log("ورود موفق:", user.email);
 
         res.json({
             success: true,
@@ -353,7 +341,6 @@ app.post("/api/login", async (req, res) => {
                 email: user.email
             }
         });
-
     } catch (error) {
         console.error("Login Error:", error);
 
@@ -365,7 +352,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // ======================================================
-// اطلاعات کاربر فعلی
+// ME
 // ======================================================
 
 app.get("/api/me", authMiddleware, (req, res) => {
@@ -402,7 +389,7 @@ app.get("/api/me", authMiddleware, (req, res) => {
 });
 
 // ======================================================
-// پروفایل
+// PROFILE
 // ======================================================
 
 app.get("/api/profile", authMiddleware, (req, res) => {
@@ -469,7 +456,6 @@ app.put("/api/profile", authMiddleware, (req, res) => {
             success: true,
             message: "پروفایل با موفقیت ذخیره شد."
         });
-
     } catch (error) {
         console.error("Profile Error:", error);
 
@@ -481,7 +467,7 @@ app.put("/api/profile", authMiddleware, (req, res) => {
 });
 
 // ======================================================
-// کلاس‌ها - دریافت همه
+// CLASSES - GET
 // ======================================================
 
 app.get("/api/classes", authMiddleware, (req, res) => {
@@ -498,7 +484,6 @@ app.get("/api/classes", authMiddleware, (req, res) => {
         `).all(req.user.id);
 
         const result = classes.map(classItem => {
-
             const students = db.prepare(`
                 SELECT
                     id,
@@ -510,24 +495,24 @@ app.get("/api/classes", authMiddleware, (req, res) => {
                 ORDER BY name ASC
             `).all(classItem.id);
 
-            const studentsWithGrades = students.map(student => {
+            const studentsWithGrades =
+                students.map(student => {
+                    const grades = db.prepare(`
+                        SELECT grade
+                        FROM grades
+                        WHERE student_id = ?
+                        ORDER BY position ASC
+                    `).all(student.id);
 
-                const grades = db.prepare(`
-                    SELECT
-                        grade,
-                        position
-                    FROM grades
-                    WHERE student_id = ?
-                    ORDER BY position ASC
-                `).all(student.id);
-
-                return {
-                    id: student.id,
-                    name: student.name,
-                    code: student.code,
-                    grades: grades.map(g => g.grade)
-                };
-            });
+                    return {
+                        id: student.id,
+                        name: student.name,
+                        code: student.code,
+                        grades: grades.map(
+                            g => g.grade
+                        )
+                    };
+                });
 
             return {
                 id: classItem.id,
@@ -541,7 +526,6 @@ app.get("/api/classes", authMiddleware, (req, res) => {
             success: true,
             classes: result
         });
-
     } catch (error) {
         console.error("Get Classes Error:", error);
 
@@ -553,7 +537,7 @@ app.get("/api/classes", authMiddleware, (req, res) => {
 });
 
 // ======================================================
-// ایجاد کلاس
+// CREATE CLASS
 // ======================================================
 
 app.post("/api/classes", authMiddleware, (req, res) => {
@@ -599,7 +583,6 @@ app.post("/api/classes", authMiddleware, (req, res) => {
                 students: []
             }
         });
-
     } catch (error) {
         console.error("Create Class Error:", error);
 
@@ -611,126 +594,134 @@ app.post("/api/classes", authMiddleware, (req, res) => {
 });
 
 // ======================================================
-// ویرایش کلاس
+// UPDATE CLASS
 // ======================================================
 
-app.put("/api/classes/:classId", authMiddleware, (req, res) => {
-    try {
-        const classId = req.params.classId;
+app.put(
+    "/api/classes/:classId",
+    authMiddleware,
+    (req, res) => {
+        try {
+            const classId = req.params.classId;
 
-        const existingClass = getClassForUser(
-            classId,
-            req.user.id
-        );
+            const existingClass =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
-        if (!existingClass) {
-            return res.status(404).json({
+            if (!existingClass) {
+                return res.status(404).json({
+                    success: false,
+                    message: "کلاس پیدا نشد."
+                });
+            }
+
+            const {
+                name,
+                grade
+            } = req.body;
+
+            if (!name || !name.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "نام کلاس الزامی است."
+                });
+            }
+
+            db.prepare(`
+                UPDATE classes
+                SET
+                    name = ?,
+                    grade = ?
+                WHERE id = ?
+                AND user_id = ?
+            `).run(
+                name.trim(),
+                grade || "",
+                classId,
+                req.user.id
+            );
+
+            res.json({
+                success: true,
+                message: "کلاس با موفقیت ویرایش شد."
+            });
+        } catch (error) {
+            console.error("Update Class Error:", error);
+
+            res.status(500).json({
                 success: false,
-                message: "کلاس پیدا نشد."
+                message: "خطا در ویرایش کلاس."
             });
         }
-
-        const {
-            name,
-            grade
-        } = req.body;
-
-        if (!name || !name.trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "نام کلاس الزامی است."
-            });
-        }
-
-        db.prepare(`
-            UPDATE classes
-            SET
-                name = ?,
-                grade = ?
-            WHERE id = ?
-            AND user_id = ?
-        `).run(
-            name.trim(),
-            grade || "",
-            classId,
-            req.user.id
-        );
-
-        res.json({
-            success: true,
-            message: "کلاس با موفقیت ویرایش شد."
-        });
-
-    } catch (error) {
-        console.error("Update Class Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "خطا در ویرایش کلاس."
-        });
     }
-});
+);
 
 // ======================================================
-// حذف کلاس
+// DELETE CLASS
 // ======================================================
 
-app.delete("/api/classes/:classId", authMiddleware, (req, res) => {
-    try {
-        const classId = req.params.classId;
+app.delete(
+    "/api/classes/:classId",
+    authMiddleware,
+    (req, res) => {
+        try {
+            const classId = req.params.classId;
 
-        const existingClass = getClassForUser(
-            classId,
-            req.user.id
-        );
+            const existingClass =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
-        if (!existingClass) {
-            return res.status(404).json({
+            if (!existingClass) {
+                return res.status(404).json({
+                    success: false,
+                    message: "کلاس پیدا نشد."
+                });
+            }
+
+            db.prepare(`
+                DELETE FROM classes
+                WHERE id = ?
+                AND user_id = ?
+            `).run(
+                classId,
+                req.user.id
+            );
+
+            res.json({
+                success: true,
+                message: "کلاس حذف شد."
+            });
+        } catch (error) {
+            console.error("Delete Class Error:", error);
+
+            res.status(500).json({
                 success: false,
-                message: "کلاس پیدا نشد."
+                message: "خطا در حذف کلاس."
             });
         }
-
-        db.prepare(`
-            DELETE FROM classes
-            WHERE id = ?
-            AND user_id = ?
-        `).run(
-            classId,
-            req.user.id
-        );
-
-        res.json({
-            success: true,
-            message: "کلاس حذف شد."
-        });
-
-    } catch (error) {
-        console.error("Delete Class Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "خطا در حذف کلاس."
-        });
     }
-});
+);
 
 // ======================================================
-// دریافت دانش‌آموزان یک کلاس
+// STUDENTS - GET
 // ======================================================
 
 app.get(
     "/api/classes/:classId/students",
     authMiddleware,
     (req, res) => {
-
         try {
             const classId = req.params.classId;
 
-            const classItem = getClassForUser(
-                classId,
-                req.user.id
-            );
+            const classItem =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
             if (!classItem) {
                 return res.status(404).json({
@@ -751,10 +742,8 @@ app.get(
             `).all(classId);
 
             const result = students.map(student => {
-
                 const grades = db.prepare(`
-                    SELECT
-                        grade
+                    SELECT grade
                     FROM grades
                     WHERE student_id = ?
                     ORDER BY position ASC
@@ -764,7 +753,9 @@ app.get(
                     id: student.id,
                     name: student.name,
                     code: student.code,
-                    grades: grades.map(g => g.grade)
+                    grades: grades.map(
+                        g => g.grade
+                    )
                 };
             });
 
@@ -772,7 +763,6 @@ app.get(
                 success: true,
                 students: result
             });
-
         } catch (error) {
             console.error("Get Students Error:", error);
 
@@ -785,21 +775,21 @@ app.get(
 );
 
 // ======================================================
-// اضافه کردن دانش‌آموز
+// CREATE STUDENT
 // ======================================================
 
 app.post(
     "/api/classes/:classId/students",
     authMiddleware,
     (req, res) => {
-
         try {
             const classId = req.params.classId;
 
-            const classItem = getClassForUser(
-                classId,
-                req.user.id
-            );
+            const classItem =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
             if (!classItem) {
                 return res.status(404).json({
@@ -849,33 +839,36 @@ app.post(
                     grades: []
                 }
             });
-
         } catch (error) {
-            console.error("Create Student Error:", error);
+            console.error(
+                "Create Student Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در اضافه کردن دانش‌آموز."
+                message:
+                    "خطا در اضافه کردن دانش‌آموز."
             });
         }
     }
 );
 
 // ======================================================
-// ویرایش دانش‌آموز
+// UPDATE STUDENT
 // ======================================================
 
 app.put(
     "/api/students/:studentId",
     authMiddleware,
     (req, res) => {
-
         try {
-            const studentId = req.params.studentId;
+            const studentId =
+                req.params.studentId;
 
             const student = db.prepare(`
                 SELECT
-                    students.*,
+                    students.id,
                     classes.user_id
                 FROM students
                 INNER JOIN classes
@@ -902,7 +895,8 @@ app.put(
             if (!name || !name.trim()) {
                 return res.status(400).json({
                     success: false,
-                    message: "نام دانش‌آموز الزامی است."
+                    message:
+                        "نام دانش‌آموز الزامی است."
                 });
             }
 
@@ -920,31 +914,35 @@ app.put(
 
             res.json({
                 success: true,
-                message: "اطلاعات دانش‌آموز ویرایش شد."
+                message:
+                    "اطلاعات دانش‌آموز ویرایش شد."
             });
-
         } catch (error) {
-            console.error("Update Student Error:", error);
+            console.error(
+                "Update Student Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در ویرایش دانش‌آموز."
+                message:
+                    "خطا در ویرایش دانش‌آموز."
             });
         }
     }
 );
 
 // ======================================================
-// حذف دانش‌آموز
+// DELETE STUDENT
 // ======================================================
 
 app.delete(
     "/api/students/:studentId",
     authMiddleware,
     (req, res) => {
-
         try {
-            const studentId = req.params.studentId;
+            const studentId =
+                req.params.studentId;
 
             const student = db.prepare(`
                 SELECT
@@ -976,29 +974,32 @@ app.delete(
                 success: true,
                 message: "دانش‌آموز حذف شد."
             });
-
         } catch (error) {
-            console.error("Delete Student Error:", error);
+            console.error(
+                "Delete Student Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در حذف دانش‌آموز."
+                message:
+                    "خطا در حذف دانش‌آموز."
             });
         }
     }
 );
 
 // ======================================================
-// دریافت نمرات دانش‌آموز
+// GET GRADES
 // ======================================================
 
 app.get(
     "/api/students/:studentId/grades",
     authMiddleware,
     (req, res) => {
-
         try {
-            const studentId = req.params.studentId;
+            const studentId =
+                req.params.studentId;
 
             const student = db.prepare(`
                 SELECT
@@ -1023,8 +1024,6 @@ app.get(
 
             const grades = db.prepare(`
                 SELECT
-                    id,
-                    position,
                     grade
                 FROM grades
                 WHERE student_id = ?
@@ -1033,31 +1032,36 @@ app.get(
 
             res.json({
                 success: true,
-                grades: grades.map(g => g.grade)
+                grades: grades.map(
+                    g => g.grade
+                )
             });
-
         } catch (error) {
-            console.error("Get Grades Error:", error);
+            console.error(
+                "Get Grades Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در دریافت نمرات."
+                message:
+                    "خطا در دریافت نمرات."
             });
         }
     }
 );
 
 // ======================================================
-// ذخیره نمرات دانش‌آموز
+// SAVE GRADES
 // ======================================================
 
 app.put(
     "/api/students/:studentId/grades",
     authMiddleware,
     (req, res) => {
-
         try {
-            const studentId = req.params.studentId;
+            const studentId =
+                req.params.studentId;
 
             const student = db.prepare(`
                 SELECT
@@ -1080,12 +1084,12 @@ app.put(
                 });
             }
 
-            const grades = Array.isArray(req.body.grades)
-                ? req.body.grades
-                : [];
+            const grades =
+                Array.isArray(req.body.grades)
+                    ? req.body.grades
+                    : [];
 
             for (const grade of grades) {
-
                 if (
                     grade === null ||
                     grade === "" ||
@@ -1094,7 +1098,8 @@ app.put(
                     continue;
                 }
 
-                const numberGrade = Number(grade);
+                const numberGrade =
+                    Number(grade);
 
                 if (
                     Number.isNaN(numberGrade) ||
@@ -1103,87 +1108,97 @@ app.put(
                 ) {
                     return res.status(400).json({
                         success: false,
-                        message: "نمره باید بین ۰ تا ۲۰ باشد."
+                        message:
+                            "نمره باید بین ۰ تا ۲۰ باشد."
                     });
                 }
             }
 
-            const saveGrades = db.transaction(() => {
+            const saveGrades =
+                db.transaction(() => {
+                    db.prepare(`
+                        DELETE FROM grades
+                        WHERE student_id = ?
+                    `).run(studentId);
 
-                db.prepare(`
-                    DELETE FROM grades
-                    WHERE student_id = ?
-                `).run(studentId);
+                    const insertGrade =
+                        db.prepare(`
+                            INSERT INTO grades (
+                                student_id,
+                                position,
+                                grade
+                            )
+                            VALUES (?, ?, ?)
+                        `);
 
-                const insertGrade = db.prepare(`
-                    INSERT INTO grades (
-                        student_id,
-                        position,
-                        grade
-                    )
-                    VALUES (?, ?, ?)
-                `);
+                    grades.forEach(
+                        (grade, index) => {
+                            if (
+                                grade === null ||
+                                grade === "" ||
+                                grade === undefined
+                            ) {
+                                return;
+                            }
 
-                grades.forEach((grade, index) => {
-
-                    if (
-                        grade === null ||
-                        grade === "" ||
-                        grade === undefined
-                    ) {
-                        return;
-                    }
-
-                    insertGrade.run(
-                        studentId,
-                        index + 1,
-                        Number(grade)
+                            insertGrade.run(
+                                studentId,
+                                index + 1,
+                                Number(grade)
+                            );
+                        }
                     );
                 });
-            });
 
             saveGrades();
 
             res.json({
                 success: true,
-                message: "نمرات با موفقیت ذخیره شدند."
+                message:
+                    "نمرات با موفقیت ذخیره شدند."
             });
-
         } catch (error) {
-            console.error("Save Grades Error:", error);
+            console.error(
+                "Save Grades Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در ذخیره نمرات."
+                message:
+                    "خطا در ذخیره نمرات."
             });
         }
     }
 );
 
 // ======================================================
-// دریافت حضور و غیاب یک روز
+// GET ATTENDANCE
 // ======================================================
 
 app.get(
     "/api/classes/:classId/attendance",
     authMiddleware,
     (req, res) => {
-
         try {
-            const classId = req.params.classId;
+            const classId =
+                req.params.classId;
+
             const date = req.query.date;
 
             if (!date) {
                 return res.status(400).json({
                     success: false,
-                    message: "تاریخ مشخص نشده است."
+                    message:
+                        "تاریخ مشخص نشده است."
                 });
             }
 
-            const classItem = getClassForUser(
-                classId,
-                req.user.id
-            );
+            const classItem =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
             if (!classItem) {
                 return res.status(404).json({
@@ -1207,7 +1222,8 @@ app.get(
             const result = {};
 
             records.forEach(record => {
-                result[record.student_id] = record.status;
+                result[record.student_id] =
+                    record.status;
             });
 
             res.json({
@@ -1215,29 +1231,32 @@ app.get(
                 date,
                 records: result
             });
-
         } catch (error) {
-            console.error("Get Attendance Error:", error);
+            console.error(
+                "Get Attendance Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در دریافت حضور و غیاب."
+                message:
+                    "خطا در دریافت حضور و غیاب."
             });
         }
     }
 );
 
 // ======================================================
-// ذخیره حضور و غیاب
+// SAVE ATTENDANCE
 // ======================================================
 
 app.put(
     "/api/classes/:classId/attendance",
     authMiddleware,
     (req, res) => {
-
         try {
-            const classId = req.params.classId;
+            const classId =
+                req.params.classId;
 
             const {
                 date,
@@ -1247,21 +1266,27 @@ app.put(
             if (!date) {
                 return res.status(400).json({
                     success: false,
-                    message: "تاریخ مشخص نشده است."
+                    message:
+                        "تاریخ مشخص نشده است."
                 });
             }
 
-            if (!records || typeof records !== "object") {
+            if (
+                !records ||
+                typeof records !== "object"
+            ) {
                 return res.status(400).json({
                     success: false,
-                    message: "اطلاعات حضور و غیاب نامعتبر است."
+                    message:
+                        "اطلاعات حضور و غیاب نامعتبر است."
                 });
             }
 
-            const classItem = getClassForUser(
-                classId,
-                req.user.id
-            );
+            const classItem =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
             if (!classItem) {
                 return res.status(404).json({
@@ -1270,94 +1295,106 @@ app.put(
                 });
             }
 
-            const saveAttendance = db.transaction(() => {
+            const saveAttendance =
+                db.transaction(() => {
+                    const studentCheck =
+                        db.prepare(`
+                            SELECT id
+                            FROM students
+                            WHERE id = ?
+                            AND class_id = ?
+                        `);
 
-                const studentCheck = db.prepare(`
-                    SELECT id
-                    FROM students
-                    WHERE id = ?
-                    AND class_id = ?
-                `);
+                    const insertAttendance =
+                        db.prepare(`
+                            INSERT INTO attendance (
+                                class_id,
+                                student_id,
+                                date,
+                                status
+                            )
+                            VALUES (?, ?, ?, ?)
+                            ON CONFLICT(student_id, date)
+                            DO UPDATE SET
+                                status =
+                                    excluded.status
+                        `);
 
-                const insertAttendance = db.prepare(`
-                    INSERT INTO attendance (
-                        class_id,
-                        student_id,
-                        date,
-                        status
-                    )
-                    VALUES (?, ?, ?, ?)
-                    ON CONFLICT(student_id, date)
-                    DO UPDATE SET
-                        status = excluded.status
-                `);
-
-                for (const studentId of Object.keys(records)) {
-
-                    const status = records[studentId];
-
-                    if (
-                        ![
-                            "present",
-                            "absent",
-                            "late"
-                        ].includes(status)
+                    for (
+                        const studentId
+                        of Object.keys(records)
                     ) {
-                        continue;
+                        const status =
+                            records[studentId];
+
+                        if (
+                            ![
+                                "present",
+                                "absent",
+                                "late"
+                            ].includes(status)
+                        ) {
+                            continue;
+                        }
+
+                        const student =
+                            studentCheck.get(
+                                studentId,
+                                classId
+                            );
+
+                        if (!student) {
+                            continue;
+                        }
+
+                        insertAttendance.run(
+                            classId,
+                            studentId,
+                            date,
+                            status
+                        );
                     }
-
-                    const student = studentCheck.get(
-                        studentId,
-                        classId
-                    );
-
-                    if (!student) {
-                        continue;
-                    }
-
-                    insertAttendance.run(
-                        classId,
-                        studentId,
-                        date,
-                        status
-                    );
-                }
-            });
+                });
 
             saveAttendance();
 
             res.json({
                 success: true,
-                message: "حضور و غیاب با موفقیت ذخیره شد."
+                message:
+                    "حضور و غیاب با موفقیت ذخیره شد."
             });
-
         } catch (error) {
-            console.error("Save Attendance Error:", error);
+            console.error(
+                "Save Attendance Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در ذخیره حضور و غیاب."
+                message:
+                    "خطا در ذخیره حضور و غیاب."
             });
         }
     }
 );
 
 // ======================================================
-// تاریخچه حضور و غیاب
+// ATTENDANCE HISTORY
 // ======================================================
 
 app.get(
     "/api/classes/:classId/attendance/history",
     authMiddleware,
     (req, res) => {
-
         try {
-            const classId = req.params.classId;
+            const classId =
+                req.params.classId;
 
-            const classItem = getClassForUser(
-                classId,
-                req.user.id
-            );
+            const classItem =
+                getClassForUser(
+                    classId,
+                    req.user.id
+                );
 
             if (!classItem) {
                 return res.status(404).json({
@@ -1380,81 +1417,88 @@ app.get(
                 success: true,
                 history
             });
-
         } catch (error) {
-            console.error("Attendance History Error:", error);
+            console.error(
+                "Attendance History Error:",
+                error
+            );
 
             res.status(500).json({
                 success: false,
-                message: "خطا در دریافت تاریخچه حضور و غیاب."
+                message:
+                    "خطا در دریافت تاریخچه حضور و غیاب."
             });
         }
     }
 );
 
 // ======================================================
-// آمار داشبورد
+// DASHBOARD
 // ======================================================
 
-app.get("/api/dashboard", authMiddleware, (req, res) => {
+app.get(
+    "/api/dashboard",
+    authMiddleware,
+    (req, res) => {
+        try {
+            const classCount = db.prepare(`
+                SELECT COUNT(*) AS count
+                FROM classes
+                WHERE user_id = ?
+            `).get(req.user.id).count;
 
-    try {
+            const studentCount = db.prepare(`
+                SELECT COUNT(*) AS count
+                FROM students
+                INNER JOIN classes
+                    ON students.class_id = classes.id
+                WHERE classes.user_id = ?
+            `).get(req.user.id).count;
 
-        const classCount = db.prepare(`
-            SELECT COUNT(*) AS count
-            FROM classes
-            WHERE user_id = ?
-        `).get(req.user.id).count;
+            const gradeCount = db.prepare(`
+                SELECT COUNT(*) AS count
+                FROM grades
+                INNER JOIN students
+                    ON grades.student_id = students.id
+                INNER JOIN classes
+                    ON students.class_id = classes.id
+                WHERE classes.user_id = ?
+            `).get(req.user.id).count;
 
-        const studentCount = db.prepare(`
-            SELECT COUNT(*) AS count
-            FROM students
-            INNER JOIN classes
-                ON students.class_id = classes.id
-            WHERE classes.user_id = ?
-        `).get(req.user.id).count;
+            const attendanceCount = db.prepare(`
+                SELECT COUNT(*) AS count
+                FROM attendance
+                INNER JOIN classes
+                    ON attendance.class_id = classes.id
+                WHERE classes.user_id = ?
+            `).get(req.user.id).count;
 
-        const gradeCount = db.prepare(`
-            SELECT COUNT(*) AS count
-            FROM grades
-            INNER JOIN students
-                ON grades.student_id = students.id
-            INNER JOIN classes
-                ON students.class_id = classes.id
-            WHERE classes.user_id = ?
-        `).get(req.user.id).count;
+            res.json({
+                success: true,
+                stats: {
+                    classes: classCount,
+                    students: studentCount,
+                    grades: gradeCount,
+                    attendance: attendanceCount
+                }
+            });
+        } catch (error) {
+            console.error(
+                "Dashboard Error:",
+                error
+            );
 
-        const attendanceCount = db.prepare(`
-            SELECT COUNT(*) AS count
-            FROM attendance
-            INNER JOIN classes
-                ON attendance.class_id = classes.id
-            WHERE classes.user_id = ?
-        `).get(req.user.id).count;
-
-        res.json({
-            success: true,
-            stats: {
-                classes: classCount,
-                students: studentCount,
-                grades: gradeCount,
-                attendance: attendanceCount
-            }
-        });
-
-    } catch (error) {
-
-        console.error("Dashboard Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "خطا در دریافت آمار داشبورد."
-        });
+            res.status(500).json({
+                success: false,
+                message:
+                    "خطا در دریافت آمار داشبورد."
+            });
+        }
     }
-});
+);
 
 // ======================================================
-// خطای مسیرهای ناشناخته
+// 404
 // ======================================================
 
 app.use((req, res) => {
@@ -1465,18 +1509,35 @@ app.use((req, res) => {
 });
 
 // ======================================================
-// اجرای سرور
+// START SERVER - IMPORTANT FOR RENDER
 // ======================================================
 
-app.listen(PORT, () => {
-
-    console.log("");
-    console.log("=================================");
-    console.log("       KELASYAR BACKEND");
-    console.log("=================================");
-    console.log(`Server: http://localhost:${PORT}`);
-    console.log("Database: SQLite");
-    console.log("Status: ONLINE");
-    console.log("=================================");
-    console.log("");
-});
+app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log("");
+        console.log(
+            "================================="
+        );
+        console.log(
+            "       KELASYAR BACKEND"
+        );
+        console.log(
+            "================================="
+        );
+        console.log(
+            `Server running on port ${PORT}`
+        );
+        console.log(
+            "Database: SQLite"
+        );
+        console.log(
+            "Status: ONLINE"
+        );
+        console.log(
+            "================================="
+        );
+        console.log("");
+    }
+);
